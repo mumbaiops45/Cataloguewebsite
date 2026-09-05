@@ -37,12 +37,12 @@ const steps = [
 
 export default function Process() {
   return (
-    <section className="process section">
+    <section className="process section" id="process">
       <div className="wrap">
         <div className="process-head">
           <div>
             <p className="eyebrow">How it&apos;s made</p>
-            <SplitHeading as="h2" scroll className="display-3">
+            <SplitHeading as="h2" scroll className="display-2">
               From the training bench <em>to your table.</em>
             </SplitHeading>
           </div>

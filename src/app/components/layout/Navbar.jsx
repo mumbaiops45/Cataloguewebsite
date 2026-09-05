@@ -5,23 +5,19 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, ShoppingBag, ArrowUpRight, User } from "lucide-react";
 import { nav } from "../../lib/site";
+import { useCart } from "../cart/CartContext";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { count } = useCart();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [overDark, setOverDark] = useState(false);
 
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      const banner = document.querySelector(".hero, .page-head");
-      setScrolled(y > 70);
-      setOverDark(!!banner && y < banner.offsetHeight - 70);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 70);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -37,11 +33,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header
-        className={`nav ${scrolled ? "scrolled" : ""} ${
-          overDark ? "over-dark" : ""
-        }`}
-      >
+      <header className={`nav ${scrolled ? "scrolled" : ""}`}>
         <div className="announce">
           <div className="wrap announce-inner">
             <span>
@@ -85,7 +77,7 @@ export default function Navbar() {
             <Link href="/cart" className="cart-btn" aria-label="Cart">
               <ShoppingBag size={16} />
               <span className="cart-text desktop-only">Cart</span>
-              <span className="cart-count">0</span>
+              <span className="cart-count">{count}</span>
             </Link>
             <button
               className="burger"

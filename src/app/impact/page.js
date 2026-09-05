@@ -3,7 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
 import Counter from "../components/anim/Counter";
-import { impactStats, partners, awards } from "../lib/site";
+import Image from "next/image";
+import { impactStats, awards, ngoPartner, corporatePrograms } from "../lib/site";
 
 export const metadata = {
   title: "Impact",
@@ -57,6 +58,11 @@ export default function ImpactPage() {
               </div>
             ))}
           </Reveal>
+          <Reveal style={{ marginTop: 28 }}>
+            <Link href="/awards" className="link-underline">
+              See the full wall of honour <ArrowUpRight size={15} />
+            </Link>
+          </Reveal>
         </div>
       </section>
 
@@ -66,13 +72,54 @@ export default function ImpactPage() {
           <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
             Employee engagement, internships, exhibitions, orders.
           </SplitHeading>
-          <Reveal className="pill-row" stagger style={{ marginTop: 40 }}>
-            {partners.map((p) => (
-              <span className="pill" key={p}>
-                {p}
-              </span>
-            ))}
+
+          <Reveal className="ngo-partner-card" style={{ marginTop: 44 }}>
+            <div>
+              <span className="ngo-partner-tag">NGO partner</span>
+              <h3>{ngoPartner.name}</h3>
+              <p className="role">{ngoPartner.role}</p>
+              <p>{ngoPartner.blurb}</p>
+            </div>
+            <ul className="ngo-reach-list">
+              {ngoPartner.reach.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
           </Reveal>
+
+          <div className="program-rows" style={{ marginTop: 64 }}>
+            {corporatePrograms.map((p, i) => (
+              <Reveal
+                className={`program-row ${i % 2 === 1 ? "reverse" : ""}`}
+                key={p.title}
+                y={24}
+              >
+                <div className={`program-media ${p.images.length > 1 ? "dual" : ""}`}>
+                  {p.images.map((src) => (
+                    <div className="program-img" key={src}>
+                      <Image
+                        src={src}
+                        alt={p.title}
+                        fill
+                        sizes="(max-width: 1080px) 100vw, 45vw"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="program-content">
+                  <h3>{p.title}</h3>
+                  <p>{p.blurb}</p>
+                  <div className="program-companies">
+                    {p.companies.map((c) => (
+                      <span className="pill" key={c}>
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

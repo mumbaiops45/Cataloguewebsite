@@ -14,7 +14,7 @@ const pills = [
 
 export default function Story() {
   return (
-    <section className="story section">
+    <section className="story section" id="story">
       <div className="wrap story-grid">
         <Reveal className="story-figure">
           <div className="img-a">
@@ -38,7 +38,7 @@ export default function Story() {
 
         <div className="story-body">
           <p className="eyebrow">Who makes Blessings</p>
-          <SplitHeading as="h2" scroll className="display-3">
+          <SplitHeading as="h2" scroll className="display-2">
             A workshop where a disability is <em>not the story.</em>
           </SplitHeading>
           <Reveal>

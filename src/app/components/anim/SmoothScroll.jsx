@@ -13,7 +13,7 @@ export default function SmoothScroll({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (!window.location.hash) window.scrollTo(0, 0);
     ScrollTrigger.refresh();
   }, [pathname]);
 

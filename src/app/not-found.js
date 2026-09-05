@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <section
       className="section"
-      style={{ paddingTop: "clamp(150px, 20vw, 220px)", textAlign: "center" }}
+      style={{ paddingTop: "clamp(120px, 11vw, 160px)", textAlign: "center" }}
     >
       <div className="wrap" style={{ maxWidth: 540 }}>
         <p className="eyebrow center" style={{ justifyContent: "center" }}>

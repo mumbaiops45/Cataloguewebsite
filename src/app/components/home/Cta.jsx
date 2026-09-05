@@ -5,7 +5,7 @@ import SplitHeading from "../anim/SplitHeading";
 
 export default function Cta() {
   return (
-    <section className="cta section">
+    <section className="cta section" id="cta">
       <div className="wrap">
         <SplitHeading as="h2" scroll>
           Buy a gift.

@@ -7,12 +7,12 @@ import { impactStats } from "../../lib/site";
 
 export default function Impact() {
   return (
-    <section className="impact section">
+    <section className="impact section" id="impact">
       <div className="wrap">
         <div className="impact-head">
           <div>
             <p className="eyebrow">The difference</p>
-            <SplitHeading as="h2" scroll className="display-3">
+            <SplitHeading as="h2" scroll className="display-2">
               Numbers that mean a <em>livelihood.</em>
             </SplitHeading>
           </div>

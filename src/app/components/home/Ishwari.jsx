@@ -7,7 +7,7 @@ import { ishwariImages, ishwariItems } from "../../lib/site";
 
 export default function Ishwari() {
   return (
-    <section className="ishwari section">
+    <section className="ishwari section" id="ishwari">
       <div className="wrap ishwari-grid">
         <div>
           <p className="eyebrow" style={{ color: "var(--orange-soft)" }}>

@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, prefersReducedMotion } from "../anim/gsap";
 import { testimonials } from "../../lib/site";
+import Reveal from "../anim/Reveal";
 
 export default function Voices() {
   const root = useRef(null);
@@ -39,13 +40,13 @@ export default function Voices() {
   );
 
   return (
-    <section className="voices section" ref={root}>
+    <section className="voices section" id="voices" ref={root}>
       <div className="wrap">
-        <p className="eyebrow center" style={{ margin: "0 auto" }}>
+        <Reveal as="p" className="eyebrow center" style={{ margin: "0 auto" }}>
           In our words
-        </p>
+        </Reveal>
 
-        <div className="voice-stage">
+        <Reveal className="voice-stage" y={16} delay={0.1}>
           <span className="voice-quote" aria-hidden="true">
             &ldquo;
           </span>
@@ -62,7 +63,7 @@ export default function Voices() {
               </footer>
             </blockquote>
           ))}
-        </div>
+        </Reveal>
 
         <div className="voice-dots">
           {testimonials.map((t, k) => (

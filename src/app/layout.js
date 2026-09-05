@@ -1,21 +1,16 @@
 import "./globals.css";
 
-import { Fraunces, Inter } from "next/font/google";
+import { Rubik } from "next/font/google";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SmoothScroll from "./components/anim/SmoothScroll";
+import { CartProvider } from "./components/cart/CartContext";
 
-const fraunces = Fraunces({
+const rubik = Rubik({
   subsets: ["latin"],
   display: "swap",
-  axes: ["SOFT", "WONK", "opsz"],
-  variable: "--font-display",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-rubik",
 });
 
 const SITE_URL = "https://enabling-disabled.org";
@@ -50,18 +45,20 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang="en" className={rubik.variable}>
       <body>
         <a href="#main" className="skip-link">
           Skip to content
         </a>
 
-        <Navbar />
+        <CartProvider>
+          <Navbar />
 
-        <SmoothScroll>
-          <main id="main">{children}</main>
-          <Footer />
-        </SmoothScroll>
+          <SmoothScroll>
+            <main id="main">{children}</main>
+            <Footer />
+          </SmoothScroll>
+        </CartProvider>
       </body>
     </html>
   );

@@ -52,7 +52,19 @@ export default function Collections() {
 
   useGSAP(
     () => {
-      if (prefersReducedMotion() || window.innerWidth < 760) return;
+      if (prefersReducedMotion()) return;
+
+      if (window.innerWidth < 760) {
+        gsap.from(gsap.utils.toArray(".collection-card", track.current), {
+          opacity: 0,
+          y: 28,
+          duration: 0.7,
+          ease: "power2.out",
+          stagger: 0.12,
+          scrollTrigger: { trigger: section.current, start: "top 80%" },
+        });
+        return;
+      }
 
       const el = track.current;
       const distance = () => el.scrollWidth - window.innerWidth + 80;
@@ -77,7 +89,7 @@ export default function Collections() {
   );
 
   return (
-    <section className="collections section" ref={section}>
+    <section className="collections section" id="collections" ref={section}>
       <div className="wrap collections-head">
         <div>
           <p className="eyebrow">The range</p>

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
-import { ishwariItems, ishwariImages } from "../lib/site";
+import IshwariProductGrid from "../components/ishwari/IshwariProductGrid";
+import { sefdAbout, ishwariAbout } from "../lib/site";
 
 export const metadata = {
   title: "Ishwari — Divine Offerings",
@@ -39,82 +40,54 @@ export default function IshwariPage() {
 
       <section className="section">
         <div className="wrap prose-grid">
-          <p className="eyebrow">The idea</p>
+          <div className="ishwari-intro-badge">
+            <p className="eyebrow">About SEFD</p>
+            <div className="ishwari-logo-card">
+              <Image
+                src="/products/catalogue/Ishwari.png"
+                alt="Ishwari — Divine Offerings"
+                width={607}
+                height={169}
+              />
+            </div>
+            <ul className="ishwari-traits">
+              {traits.map((v) => (
+                <li key={v.k}>
+                  <span className="k">{v.k}</span>
+                  <p>{v.t}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div>
             <SplitHeading as="h2" scroll>
-              Soft-launched on 7 March 2026,
+              Beyond charity —
               <br />
-              on Women&apos;s Day.
+              a life with self esteem.
             </SplitHeading>
             <Reveal>
-              <p style={{ marginTop: 22 }}>
-                Ishwari sits under the Self Esteem Foundation for Disabled. The
-                range is recycled and curated from sarees offered to goddesses in
-                the temple during the auspicious festive season — turned, by the
-                hands of our artisans, into torans, gudhi vastra, cushion covers,
-                bags, purses and table linen.
-              </p>
-              <p>
-                We are absolutely certain you will be happy to possess these
-                products as blessings, and to gift them to your family and
-                friends. Every purchase supports inclusion, dignity and
-                self-reliance.
-              </p>
+              <p style={{ marginTop: 22 }}>{sefdAbout}</p>
+              <p>{ishwariAbout}</p>
             </Reveal>
           </div>
         </div>
       </section>
 
-      <section className="section-sm" style={{ background: "var(--paper)" }}>
+      <section className="section" id="catalogue">
         <div className="wrap">
-          <Reveal className="value-grid" stagger>
-            {traits.map((v) => (
-              <div className="value" key={v.k}>
-                <span className="k">{v.k}</span>
-                <p>{v.t}</p>
-              </div>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="wrap">
-          <p className="eyebrow">The offerings</p>
+          <p className="eyebrow">Shop the range</p>
           <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
-            The Ishwari price list
+            Product Catalogue
           </SplitHeading>
+          <p className="lead" style={{ marginTop: 18, maxWidth: "56ch" }}>
+            Every Ishwari piece, in stock and ready to gift. Add what you love
+            to your cart, or buy it now — proceeds go straight to the artisans
+            who made it.
+          </p>
 
-          <Reveal
-            className="ishwari-list"
-            stagger
-            style={{ marginTop: 40, color: "var(--ink)" }}
-          >
-            {ishwariItems.map((it) => (
-              <li
-                key={it.name}
-                style={{ borderColor: "var(--line)", color: "var(--ink)" }}
-              >
-                <span>{it.name}</span>
-                <b style={{ color: "var(--orange-deep)" }}>{it.price}</b>
-              </li>
-            ))}
-          </Reveal>
-
-          <Reveal style={{ marginTop: 44 }}>
-            <div className="catalogue-strip">
-              {ishwariImages.map((src, i) => (
-                <figure key={src}>
-                  <Image
-                    src={src}
-                    alt={`Ishwari recycled-saree craft ${i + 1}`}
-                    width={480}
-                    height={600}
-                  />
-                </figure>
-              ))}
-            </div>
-          </Reveal>
+          <div style={{ marginTop: 44 }}>
+            <IshwariProductGrid />
+          </div>
         </div>
       </section>
 

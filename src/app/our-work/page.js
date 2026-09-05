@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
-import { workshops, projects } from "../lib/site";
+import { workshops, workshopGallery, projects } from "../lib/site";
 
 export const metadata = {
   title: "Our Work",
@@ -45,15 +45,31 @@ export default function OurWorkPage() {
         </div>
       </section>
 
-      <section className="section-sm">
+      <section className="section-sm" style={{ background: "var(--paper)" }}>
         <div className="wrap">
-          <Reveal className="wide-figure">
-            <Image
-              src="/homepage/homepage4.jpg"
-              alt="A crochet and diya-painting workshop in progress at SEFD"
-              width={1600}
-              height={686}
-            />
+          <p className="eyebrow">In pictures</p>
+          <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
+            Workshop &amp; Skill Development Activities
+          </SplitHeading>
+
+          <Reveal className="workshop-gallery" stagger style={{ marginTop: 44 }}>
+            {workshopGallery.map((g) => (
+              <figure className={`gitem gitem-${g.slot}`} key={g.slot}>
+                <div className="gitem-media">
+                  {g.images.map((src) => (
+                    <div className="gitem-img" key={src}>
+                      <Image
+                        src={src}
+                        alt={g.caption}
+                        fill
+                        sizes="(max-width: 1080px) 50vw, 20vw"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <figcaption>{g.caption}</figcaption>
+              </figure>
+            ))}
           </Reveal>
         </div>
       </section>

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, prefersReducedMotion } from "./gsap";
+import { gsap, ScrollTrigger, prefersReducedMotion } from "./gsap";
 
 export default function Counter({
   to,
@@ -29,12 +29,24 @@ export default function Counter({
         return;
       }
 
-      gsap.to(obj, {
-        val: to,
-        duration,
-        ease: "power2.out",
-        onUpdate: render,
-        scrollTrigger: { trigger: el, start: "top 88%" },
+      // Fire the count-up imperatively from onEnter rather than binding it as
+      // the ScrollTrigger's own animation — a later ScrollTrigger.refresh()
+      // (SmoothScroll calls this on load/font-ready) reverts and re-applies
+      // trigger-bound animations to remeasure positions, which would yank an
+      // already-completed count back to its start value. once:true still
+      // stops it from re-firing (and reversing) on scroll-back.
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 88%",
+        once: true,
+        onEnter: () => {
+          gsap.to(obj, {
+            val: to,
+            duration,
+            ease: "power2.out",
+            onUpdate: render,
+          });
+        },
       });
     },
     { scope: ref, dependencies: [to] }

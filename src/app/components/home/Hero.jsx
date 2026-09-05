@@ -139,9 +139,9 @@ export default function Hero() {
         </p>
 
         <h1 className="hero-h1">
-          <span className="hero-line">Handmade by hands</span>
+          <span className="hero-line">Handmade by hands the world</span>
           <span className="hero-line">
-            the world{" "}
+            {/* the world{" "} */}
             <span className="hero-word-wrap">
               <span className="hero-word" ref={word}>
                 overlooked.

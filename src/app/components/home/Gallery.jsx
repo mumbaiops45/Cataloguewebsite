@@ -37,12 +37,12 @@ function Row({ items, speed }) {
 
 export default function Gallery() {
   return (
-    <section className="gallery section-sm">
+    <section className="gallery section-sm" id="gallery">
       <div className="wrap">
         <Reveal>
           <p className="eyebrow">The workshop &amp; the work</p>
         </Reveal>
-        <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 14 }}>
+        <SplitHeading as="h2" scroll className="display-2" style={{ marginTop: 14 }}>
           Made by hand, <span className="italic-accent">every single one.</span>
         </SplitHeading>
       </div>

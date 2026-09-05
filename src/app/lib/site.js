@@ -15,6 +15,8 @@ export const nav = [
   { name: "Ishwari", href: "/ishwari" },
   { name: "Our Story", href: "/about" },
   { name: "Our Work", href: "/our-work" },
+  { name: "Events", href: "/events" },
+  { name: "Awards", href: "/awards" },
   { name: "Impact", href: "/impact" },
 ];
 
@@ -42,6 +44,22 @@ export const workshops = [
   { name: "Crochet", note: "Yarn work for trims, coasters and soft goods." },
   { name: "Fluid & Diya Painting", note: "Pouring art and festive lamp decoration." },
   { name: "Thread Insertion & Stitching", note: "Machine and hand finishing for every product." },
+];
+
+// Photo documentation of live workshops — used by the "Workshop & Skill
+// Development Activities" gallery on the Our Work page.
+export const workshopGallery = [
+  {
+    slot: "crochet",
+    caption: "Crochet making workshop",
+    images: ["/workshop/Crochet1.png", "/workshop/Crochet2.png"],
+  },
+  { slot: "thread", caption: "Thread Insertion", images: ["/workshop/threadinsertion.png"] },
+  { slot: "fluid", caption: "Fluid Painting", images: ["/workshop/fluidpainting.png"] },
+  { slot: "diya", caption: "Diya Painting", images: ["/workshop/diyapainting.png"] },
+  { slot: "stencil", caption: "Stencil Painting", images: ["/workshop/stencilpainting.png"] },
+  { slot: "block", caption: "Block Printing", images: ["/workshop/blockprinting.png"] },
+  { slot: "tiedye", caption: "Tie & Dye", images: ["/workshop/tiedye.png"] },
 ];
 
 export const projects = [
@@ -79,11 +97,124 @@ export const partners = [
   "S.M. Shetty College",
 ];
 
+// MBA Foundation / G.O.D.S — the founder associate NGO partner behind SEFD.
+export const ngoPartner = {
+  name: "MBA Foundation — G.O.D.S",
+  role: "Founder Associate Partner",
+  blurb:
+    "There are about 20 NGOs from the disability sector and marginalised communities who send us their products for sale.",
+  reach: [
+    "700 Friends of GODS (FOG) members across Mumbai, Thane & Navi Mumbai",
+    "About 50 customised corporate orders completed a year",
+    "8 to 10 employee engagement programs a year",
+    "200+ people with disabilities and the disadvantaged in gainful employment",
+    "Collaborations with 3 prime educational institutes for marketing projects",
+  ],
+};
+
+// Corporate & institutional programs, each documented with real photos —
+// the "Our Impact" partner breakdown, shown on the /impact page.
+export const corporatePrograms = [
+  {
+    title: "Employee Engagement Programs",
+    blurb: "Hands-on craft sessions we run at partner offices, pairing employees with our artisans for a day.",
+    images: ["/impact/employeeengagementactivities.png"],
+    companies: [
+      "M&G Global Services Private Limited",
+      "Marsh & McLennan Global Services India Pvt. Ltd.",
+      "Siemens Healthineers India",
+      "Mahindra Logistics",
+      "Tata Tele Business Services",
+      "and many more",
+    ],
+  },
+  {
+    title: "Student Internship Programs",
+    blurb: "College students spend time on the floor with our beneficiaries, learning what inclusive livelihoods look like in practice.",
+    images: ["/impact/internshipprogramforstudents.png"],
+    companies: [
+      "Vivekanand Business School",
+      "S.M. Shetty College",
+      "ITM Skills University",
+      "and other academic institutions",
+    ],
+  },
+  {
+    title: "Corporate Exhibitions",
+    blurb: "Pop-up stalls at partner offices and campuses, where the full Blessings range meets the people who'll gift it.",
+    images: ["/impact/corporateexhibitions.png"],
+    companies: [
+      "Hiranandani Hospital",
+      "S.M. Shetty International School",
+      "Maersk Global Service Centres India Private Limited",
+      "Lionbridge",
+      "Aurionpro",
+      "and many more",
+    ],
+  },
+  {
+    title: "Corporate Orders",
+    blurb: "Customised gifting and bulk festive orders, made to spec for corporate clients — from jute totes to hand-painted décor.",
+    images: ["/impact/corporategifitingsolutons.png", "/impact/bulkorders.png"],
+    companies: [
+      "Burns & McDonnell India",
+      "GHP Group",
+      "IPRS",
+      "Dmacq Software Pvt. Ltd.",
+      "Turner International India",
+      "LMN Financial Services",
+      "and several other corporate clients",
+    ],
+  },
+];
+
 export const awards = [
   { title: "Social Impact Award 2024", by: "Rotary Club of Bombay Pier" },
   { title: "Exemplary Contribution to Society", by: "Rotary Club of Bombay Pier" },
   { title: "Women Achiever — 8 March", by: "Navi Mumbai Municipal Corporation" },
   { title: "Viksit Bharat Mahila Udyojika 2025", by: "AWSIDC" },
+];
+
+// Photo documentation for the dedicated Awards & Recognition page. The
+// Rotary honour pairs a ceremony photo with the plaque itself — same award,
+// two moments.
+export const awardsGallery = [
+  {
+    title: "Rotary Social Impact Award 2024",
+    by: "Rotary Club of Bombay Pier",
+    when: "30 April 2024",
+    note: "Presented to Meenal Mandlik, Founder, in recognition of exemplary contribution to society.",
+    images: ["/awardsrecognition/image3.png", "/awardsrecognition/image4.png"],
+    featured: true,
+  },
+  {
+    title: "Viksit Bharat Mahila Udyojika Sammelan 2025",
+    by: "AWSIDC",
+    when: "28 Feb 2025",
+    note: "Felicitated at the World Trade Centre, Mumbai for enterprise led by women.",
+    images: ["/awardsrecognition/image2.png"],
+  },
+  {
+    title: "Women Achiever — Women's Day",
+    by: "Navi Mumbai Municipal Corporation",
+    when: "8 March",
+    note: "Honoured for outstanding work for persons with disabilities in Navi Mumbai.",
+    images: ["/awardsrecognition/image5.png"],
+  },
+  {
+    title: "National Seminar on Persons with Disabilities",
+    by: "MBA Foundation & G.O.D.S",
+    when: "3 December",
+    note: "Recognised on International Day of Persons with Disabilities.",
+    images: ["/awardsrecognition/image1.png"],
+  },
+  {
+    title: "Community felicitation",
+    by: "Women's self-help collective",
+    when: "",
+    note: "A certificate of appreciation from a local women's group for SEFD's outreach.",
+    images: ["/awardsrecognition/image7.png"],
+  },
 ];
 
 export const testimonials = [
@@ -134,6 +265,46 @@ export const ishwariImages = [
   "/products/cotton/page-09-05.png",
   "/products/cotton/page-09-03.png",
 ];
+
+// Ishwari catalogue — the actual product photography, one per price-list
+// item. Used for both the homepage teaser and the full /ishwari shop grid.
+export const ishwariCatalogue = [
+  { name: "Mango Leaf Toran", price: 200, img: "/products/catalogue/mangoleaf.png", featured: true },
+  { name: "Gudhi Vastra", price: 400, img: "/products/catalogue/gudi.png", featured: true },
+  { name: "Gudhi Vastra — Design 2", price: 400, img: "/products/catalogue/gudi1.png" },
+  { name: "Toran", price: 350, img: "/products/catalogue/toran.png" },
+  { name: "Naivedya Paan", price: 299, img: "/products/catalogue/naivedyapaan.png" },
+  { name: "Samai Stand Cover", price: 195, img: "/products/catalogue/samaistand.png" },
+  { name: "Mini Gudhi", price: 200, img: "/products/catalogue/minigudhi.png" },
+  { name: "Chaurang Cover", price: 450, img: "/products/catalogue/chaurangcover.png", featured: true },
+  { name: "Cushion Cover", price: 200, img: "/products/catalogue/cushioncover.png" },
+  { name: "Book Cover", price: 150, img: "/products/catalogue/bookcover.png" },
+  { name: "Knot Bag", price: 150, img: "/products/catalogue/knotbag.png" },
+  { name: "Money Purse — Big", price: 240, img: "/products/catalogue/moneypurse.png", featured: true },
+  { name: "Money Purse — Small", price: 180, img: "/products/catalogue/moneypurse1.png" },
+  { name: "Cloth Bag", price: 150, img: "/products/catalogue/clothbag.png" },
+  { name: "Shoulder Bag", price: 220, img: "/products/catalogue/shoulderbag.png", featured: true },
+  { name: "Single Saree Cover", price: 250, img: "/products/catalogue/singlesareecover.png", featured: true },
+  { name: "Quilted Bag", price: 350, img: "/products/catalogue/quiltedbag.png", featured: true },
+  { name: "Table Matte", price: 150, img: "/products/catalogue/tablematte.png" },
+  { name: "Table Runner + 4 Mattes", price: 1025, img: "/products/catalogue/tablerunnerwith4mattes.png", featured: true },
+].map((p) => ({
+  ...p,
+  slug: p.name
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, ""),
+  priceLabel: `₹${p.price.toLocaleString("en-IN")}`,
+}));
+
+// Intro copy for the Ishwari product catalogue — matches the printed
+// catalogue sheet (About SEFD + the Ishwari brand statement).
+export const sefdAbout =
+  "“SEFD” is a social enterprise and a non-profit organization registered under Section 25 of the Companies Act, 1956 (now classified under Section 8), established on 9th April 2011 with the purpose statement “Beyond Charity – A Life with Self Esteem and Dignity.” initiated by the MBA Foundation. SEFD is dedicated to promoting self-sustenance and dignity among differently-abled individuals by spreading awareness about their capabilities and creating opportunities for their gainful employment.";
+
+export const ishwariAbout =
+  "A special Brand by Self Esteem Foundation for Disabled, Exquisite gifting merchandise recycled and curated from Sarees offered to Goddesses in the temple during auspicious festive season. We are absolutely certain that you will be happy to possess these products as Blessings and Gift them to your family and friends.";
 
 // The printed Blessings catalogue sheets (design-led, one per material family).
 export const cataloguePages = [
