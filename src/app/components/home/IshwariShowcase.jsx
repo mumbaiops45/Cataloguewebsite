@@ -249,10 +249,10 @@ export default function IshwariShowcase() {
         pointerEvents: "none",
       }} />
 
-      <div className="wrap" style={{ 
-        maxWidth: "1400px", 
-        margin: "0 auto", 
-        padding: "0 2rem" 
+      <div className="wrap" style={{
+        maxWidth: "1400px",
+        margin: "0 auto",
+        padding: "0 clamp(1.1rem, 4vw, 2rem)"
       }}>
         {/* Header - Original heading preserved */}
         <div style={{
@@ -323,29 +323,31 @@ export default function IshwariShowcase() {
         </div>
 
         {/* Scrollable track */}
-        <div style={{
-          position: "relative",
-          margin: "0 -2rem",
-          padding: "0 2rem",
-          overflow: "hidden",
-        }}>
-          <div 
-            className="ishop-track" 
+        <div
+          className="ishop-scrollwrap"
+          style={{
+            position: "relative",
+            margin: "0 clamp(-1.1rem, -4vw, -2rem)",
+            padding: "0 clamp(1.1rem, 4vw, 2rem)",
+          }}
+        >
+          <div
+            className="ishop-track"
             ref={track}
             style={{
               display: "flex",
-              gap: "2.5rem",
+              gap: "clamp(1.1rem, 4vw, 2.5rem)",
               padding: "clamp(0.75rem, 3vw, 2rem) 0",
               width: "max-content",
               cursor: "grab",
             }}
           >
             {featured.map((p, i) => (
-              <div 
-                className="ishop-card" 
+              <div
+                className="ishop-card"
                 key={p.name}
                 style={{
-                  flex: "0 0 340px",
+                  flex: "0 0 min(340px, 82vw)",
                   background: "#ffffff",
                   borderRadius: "24px",
                   padding: "1.5rem",
@@ -374,8 +376,8 @@ export default function IshwariShowcase() {
                     sizes="340px"
                     priority={i < 3}
                     style={{
-                      objectFit: "cover",
-                      padding: "0.5rem",
+                      objectFit: "contain",
+                      padding: "1rem",
                       transition: "transform 0.6s ease",
                     }}
                     className="ishop-image"

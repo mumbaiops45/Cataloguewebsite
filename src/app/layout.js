@@ -5,6 +5,8 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SmoothScroll from "./components/anim/SmoothScroll";
 import { CartProvider } from "./components/cart/CartContext";
+import { LoginModalProvider } from "./components/auth/LoginModalContext";
+import LoginModal from "./components/auth/LoginModal";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -46,18 +48,22 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={rubik.variable}>
-      <body>
+      <body suppressHydrationWarning>
         <a href="#main" className="skip-link">
           Skip to content
         </a>
 
         <CartProvider>
-          <Navbar />
+          <LoginModalProvider>
+            <Navbar />
 
-          <SmoothScroll>
-            <main id="main">{children}</main>
-            <Footer />
-          </SmoothScroll>
+            <SmoothScroll>
+              <main id="main">{children}</main>
+              <Footer />
+            </SmoothScroll>
+
+            <LoginModal />
+          </LoginModalProvider>
         </CartProvider>
       </body>
     </html>

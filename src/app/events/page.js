@@ -16,40 +16,40 @@ const events = [
     title: "Ishwari brand soft-launch",
     where: "SEFD, Airoli · on Women's Day",
     img: "/events/image5.png",
+    w: 355,
+    h: 531,
   },
   {
     date: "28 Feb 2025",
     title: "Viksit Bharat Mahila Udyojika Sammelan",
     where: "World Trade Centre, Mumbai · AWSIDC collaboration",
     img: "/events/image2.png",
+    w: 727,
+    h: 388,
   },
   {
     date: "Mar 2024",
     title: "Tales of Loom — Handloom Festival",
     where: "World Trade Centre, Mumbai",
     img: "/events/image4.png",
-  },
-  {
-    date: "30 Apr 2024",
-    title: "Rotary Social Impact Awards",
-    where: "Rotary Club of Bombay Pier",
+    w: 355,
+    h: 497,
   },
   {
     date: "Ongoing",
     title: "Corporate exhibitions & employee engagement",
     where: "Hiranandani Hospital, Maersk, Lionbridge, Aurionpro & more",
     img: "/events/image1.png",
+    w: 582,
+    h: 388,
   },
   {
     date: "Ongoing",
     title: "Annual celebration & talent showcase",
     where: "GODS Champs take the stage for staff, families and supporters",
     img: "/events/image3.png",
-  },
-  {
-    date: "Ongoing",
-    title: "Awareness walks & school showcases",
-    where: "Navi Mumbai",
+    w: 586,
+    h: 302,
   },
 ];
 
@@ -96,39 +96,30 @@ export default function EventsPage() {
             Recent &amp; ongoing events
           </SplitHeading>
 
-          <div className="event-list" style={{ marginTop: 48 }}>
-            {events.map((e) =>
-              e.img ? (
-                <Reveal className="event-row" key={e.title} y={24}>
-                  <div className="event-media">
-                    <Image
-                      src={e.img}
-                      alt={e.title}
-                      fill
-                      sizes="(max-width: 900px) 100vw, 320px"
-                    />
-                  </div>
-                  <div className="event-content">
-                    <span className="event-date">
-                      <Calendar size={12} /> {e.date}
-                    </span>
-                    <h3>{e.title}</h3>
-                    <p>
-                      <MapPin size={14} /> {e.where}
-                    </p>
-                  </div>
-                </Reveal>
-              ) : (
-                <Reveal className="project" key={e.title} y={24}>
-                  <h3 style={{ fontSize: "1.4rem" }}>{e.date}</h3>
-                  <div>
-                    <p className="tag">{e.title}</p>
-                    <p>{e.where}</p>
-                  </div>
-                </Reveal>
-              )
-            )}
-          </div>
+          <Reveal className="event-tiles" stagger style={{ marginTop: 48 }}>
+            {events.map((e) => (
+              <div className="event-tile" key={e.title}>
+                <Image
+                  src={e.img}
+                  alt={e.title}
+                  width={e.w}
+                  height={e.h}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1080px) 50vw, 33vw"
+                  style={{ width: "100%", height: "auto" }}
+                />
+                <div className="event-tile-scrim" />
+                <div className="event-tile-content">
+                  <span className="event-tile-date">
+                    <Calendar size={11} /> {e.date}
+                  </span>
+                  <h3>{e.title}</h3>
+                  <p>
+                    <MapPin size={13} /> {e.where}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </Reveal>
 
           <Reveal style={{ marginTop: 48 }}>
             <Link href="/contact" className="btn btn-orange">

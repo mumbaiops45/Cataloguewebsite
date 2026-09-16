@@ -33,7 +33,7 @@ export default function IshwariProductGrid() {
 
   return (
     <Reveal className="product-grid" stagger scroll y={20}>
-      {ishwariCatalogue.map((p, i) => (
+      {ishwariCatalogue.map((p) => (
         <article className="product-card" key={p.slug}>
           <div className="frame">
             <Image
@@ -42,7 +42,6 @@ export default function IshwariProductGrid() {
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
             />
-            <span className="idx">{String(i + 1).padStart(2, "0")}</span>
           </div>
           <div className="product-meta">
             <div>

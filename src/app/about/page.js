@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Eye, Target, TrendingUp, UtensilsCrossed, Users } from "lucide-react";
+import { FaBuilding, FaGraduationCap, FaPeopleGroup } from "react-icons/fa6";
 import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
+import { esteemedClients, leadership, partnerNgos, pillars, projects } from "../lib/site";
 
 export const metadata = {
   title: "Our Story",
@@ -63,6 +65,17 @@ export default function AboutPage() {
               handcrafted by our beneficiaries with the support of trainers,
               volunteers and paraputs.
             </p>
+            <p>
+              SEFD actively works towards the social inclusion of persons with
+              disabilities by fostering confidence, independence and equal
+              opportunities — enabling them to become valued and productive
+              members of society.
+            </p>
+            <ul className="chip-list">
+              {pillars.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
           </Reveal>
         </div>
       </section>
@@ -101,6 +114,27 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="wrap">
+          <p className="eyebrow">Leadership</p>
+          <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
+            Guided since day one.
+          </SplitHeading>
+          <Reveal className="leadership-grid" stagger style={{ marginTop: 44 }}>
+            <div className="leadership-chair">
+              <span className="k">{leadership.chairman.role}</span>
+              <h3>{leadership.chairman.name}</h3>
+            </div>
+            {leadership.directors.map((d) => (
+              <div className="leadership-card" key={d}>
+                <span className="k">Director</span>
+                <h3>{d}</h3>
+              </div>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="wrap">
           <p className="eyebrow">Strategic objectives</p>
           <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
             How we get there.
@@ -117,6 +151,45 @@ export default function AboutPage() {
       </section>
 
       <section className="section" style={{ background: "var(--paper)" }}>
+        <div className="wrap">
+          <p className="eyebrow">Projects &amp; programs</p>
+          <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
+            Where the story goes next.
+          </SplitHeading>
+          <div className="project-list" style={{ marginTop: 44 }}>
+            {projects.map((p) => (
+              <Reveal className="project" key={p.title}>
+                <h3>{p.title}</h3>
+                <div>
+                  <p className="tag">{p.tagline}</p>
+                  <p>{p.body}</p>
+                </div>
+              </Reveal>
+            ))}
+            <Reveal className="project">
+              <h3>Ishwari</h3>
+              <div>
+                <p className="tag">Divine Offerings</p>
+                <p>
+                  Exquisite gifting merchandise recycled and curated from
+                  sarees offered to goddesses in temples during the festive
+                  season — a special brand by SEFD.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+          <Reveal className="btn-row" style={{ marginTop: 28 }}>
+            <Link href="/our-work" className="btn">
+              See our work <ArrowUpRight size={16} />
+            </Link>
+            <Link href="/ishwari" className="btn btn-ghost">
+              Explore Ishwari <ArrowUpRight size={16} />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section">
         <div className="wrap">
           <Reveal className="info-highlight-grid" stagger>
             <div className="info-highlight">
@@ -148,6 +221,50 @@ export default function AboutPage() {
       </section>
 
       <section className="section">
+        <div className="wrap">
+          <p className="eyebrow">Trusted by</p>
+          <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
+            Our esteemed <em>clients.</em>
+          </SplitHeading>
+          <Reveal className="clients-grid" stagger style={{ marginTop: 44 }}>
+            <div className="clients-card">
+              <span className="clients-icon">
+                <FaBuilding size={18} />
+              </span>
+              <span className="k">Corporate clients</span>
+              <div className="clients-tags">
+                {esteemedClients.corporate.map((c) => (
+                  <span key={c}>{c}</span>
+                ))}
+              </div>
+            </div>
+            <div className="clients-card">
+              <span className="clients-icon">
+                <FaGraduationCap size={18} />
+              </span>
+              <span className="k">Institutional clients</span>
+              <div className="clients-tags">
+                {esteemedClients.institutional.map((c) => (
+                  <span key={c}>{c}</span>
+                ))}
+              </div>
+            </div>
+            <div className="clients-card">
+              <span className="clients-icon">
+                <FaPeopleGroup size={18} />
+              </span>
+              <span className="k">Social institutions</span>
+              <div className="clients-tags">
+                {esteemedClients.social.map((c) => (
+                  <span key={c}>{c}</span>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section" style={{ background: "var(--paper)" }}>
         <div className="wrap prose-block center">
           <p className="eyebrow center">Our partner</p>
           <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
@@ -160,6 +277,12 @@ export default function AboutPage() {
               the disability sector and marginalised communities who send us
               products for sale.
             </p>
+            <ul className="chip-list">
+              {partnerNgos.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+              <li>and other partner NGOs</li>
+            </ul>
             <Link href="/our-work" className="btn" style={{ marginTop: 28 }}>
               See our work <ArrowUpRight size={16} />
             </Link>

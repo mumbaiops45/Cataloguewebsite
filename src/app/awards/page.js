@@ -39,7 +39,13 @@ export default function AwardsPage() {
               <div className="award-feature-media">
                 {featured.images.map((src) => (
                   <div className="award-feature-img" key={src}>
-                    <Image src={src} alt={featured.title} fill sizes="(max-width: 900px) 100vw, 50vw" />
+                    <Image
+                      src={src}
+                      alt={featured.title}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 50vw"
+                      style={{ objectFit: "contain" }}
+                    />
                   </div>
                 ))}
               </div>
@@ -69,7 +75,13 @@ export default function AwardsPage() {
             {rest.map((a) => (
               <article className="award-photo-card" key={a.title}>
                 <div className="award-photo-media">
-                  <Image src={a.images[0]} alt={a.title} fill sizes="(max-width: 900px) 50vw, 25vw" />
+                  <Image
+                    src={a.images[0]}
+                    alt={a.title}
+                    fill
+                    sizes="(max-width: 900px) 50vw, 25vw"
+                    style={{ objectFit: "contain" }}
+                  />
                 </div>
                 <div className="award-photo-body">
                   <h3>{a.title}</h3>
@@ -85,10 +97,10 @@ export default function AwardsPage() {
         </div>
       </section>
 
-      <section className="cta section">
+      <section className="cta cta-maroon section">
         <div className="wrap">
           <SplitHeading as="h2" scroll>
-            Every award is a shared one.
+            Every award is a <em>shared one.</em>
           </SplitHeading>
           <Reveal>
             <p>

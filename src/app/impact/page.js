@@ -123,7 +123,7 @@ export default function ImpactPage() {
         </div>
       </section>
 
-      <section className="cta section">
+      <section className="cta cta-maroon section">
         <div className="wrap">
           <SplitHeading as="h2" scroll>
             Add your organisation

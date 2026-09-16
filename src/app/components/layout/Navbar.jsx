@@ -1,15 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, ShoppingBag, ArrowUpRight, User } from "lucide-react";
 import { nav } from "../../lib/site";
 import { useCart } from "../cart/CartContext";
+import { useLoginModal } from "../auth/LoginModalContext";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { count } = useCart();
+  const { open: openLogin } = useLoginModal();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -47,10 +50,15 @@ export default function Navbar() {
 
         <div className="wrap nav-bar">
           <Link href="/" className="brand" aria-label="Blessings by SEFD — home">
-            <span className="brand-mark">✦</span>
-            <span className="brand-text">
-              <span className="brand-name">Blessings</span>
-              <span className="brand-sub">by SEFD</span>
+            <span className="brand-mark">
+              <Image
+                src="/logo/logo.png"
+                alt=""
+                fill
+                sizes="50px"
+                style={{ objectFit: "contain" }}
+                priority
+              />
             </span>
           </Link>
 
@@ -67,13 +75,14 @@ export default function Navbar() {
           </nav>
 
           <div className="nav-actions">
-            <Link
-              href="/login"
-              className={`nav-login ${isActive("/login") ? "active" : ""}`}
+            <button
+              type="button"
+              className="nav-login"
+              onClick={openLogin}
             >
               <User size={16} />
               <span className="desktop-only">Log in</span>
-            </Link>
+            </button>
             <Link href="/cart" className="cart-btn" aria-label="Cart">
               <ShoppingBag size={16} />
               <span className="cart-text desktop-only">Cart</span>
@@ -105,12 +114,16 @@ export default function Navbar() {
               {item.name}
             </Link>
           ))}
-          <Link
-            href="/login"
-            className={isActive("/login") ? "active" : ""}
+          <button
+            type="button"
+            className="mobile-login-btn"
+            onClick={() => {
+              setOpen(false);
+              openLogin();
+            }}
           >
             Log in
-          </Link>
+          </button>
         </div>
         <div className="mobile-foot">
           <a href="tel:+918779171635">+91 8779171635</a>

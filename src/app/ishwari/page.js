@@ -16,16 +16,15 @@ const traits = [
   { k: "Recycled", t: "Sarees offered to goddesses in temples, reimagined beautifully." },
   { k: "Handcrafted", t: "Made by differently-abled and disadvantaged beneficiaries." },
   { k: "Blessed", t: "Creations for gifting with purpose — every purchase a livelihood." },
+  { k: "Empowering", t: "Empowering lives, creating livelihoods, one gift at a time." },
 ];
 
 export default function IshwariPage() {
   return (
     <>
-      <header className="page-head" style={{ background: "var(--maroon)" }}>
+      <header className="ishwari-head">
         <div className="wrap">
-          <p className="eyebrow" style={{ color: "var(--orange-soft)" }}>
-            A special brand by SEFD
-          </p>
+          <p className="eyebrow">A special brand by SEFD</p>
           <SplitHeading as="h1">
             Ishwari — <em>Divine Offerings</em>
           </SplitHeading>
@@ -38,7 +37,7 @@ export default function IshwariPage() {
         </div>
       </header>
 
-      <section className="section">
+      <section className="section ishwari-about">
         <div className="wrap prose-grid">
           <div className="ishwari-intro-badge">
             <p className="eyebrow">About SEFD</p>
@@ -65,33 +64,33 @@ export default function IshwariPage() {
               <br />
               a life with self esteem.
             </SplitHeading>
-            <Reveal>
-              <p style={{ marginTop: 22 }}>{sefdAbout}</p>
+            <Reveal className="ishwari-about-copy">
+              <p>{sefdAbout}</p>
               <p>{ishwariAbout}</p>
             </Reveal>
           </div>
         </div>
       </section>
 
-      <section className="section" id="catalogue">
+      <section className="section ishwari-catalogue" id="catalogue">
         <div className="wrap">
           <p className="eyebrow">Shop the range</p>
-          <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
+          <SplitHeading as="h2" scroll className="display-3 ishwari-catalogue-title">
             Product Catalogue
           </SplitHeading>
-          <p className="lead" style={{ marginTop: 18, maxWidth: "56ch" }}>
+          <p className="lead ishwari-catalogue-lead">
             Every Ishwari piece, in stock and ready to gift. Add what you love
             to your cart, or buy it now — proceeds go straight to the artisans
             who made it.
           </p>
 
-          <div style={{ marginTop: 44 }}>
+          <div className="ishwari-catalogue-grid">
             <IshwariProductGrid />
           </div>
         </div>
       </section>
 
-      <section className="cta section">
+      <section className="cta ishwari-cta section">
         <div className="wrap">
           <SplitHeading as="h2" scroll>
             Gift a blessing.

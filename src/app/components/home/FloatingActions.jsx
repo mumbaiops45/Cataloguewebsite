@@ -15,6 +15,7 @@ function WhatsAppIcon(props) {
 
 export default function FloatingActions() {
   const [showTop, setShowTop] = useState(false);
+  const [nearFooter, setNearFooter] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 500);
@@ -23,8 +24,23 @@ export default function FloatingActions() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const footer = document.querySelector("footer.footer");
+    if (!footer) return;
+    // The buttons are fixed to the viewport, so once the footer scrolls
+    // into view they'd sit on top of its content (newsletter, credit
+    // link) — fade them out there since the same contact info is already
+    // in the footer's "Get in touch" column.
+    const observer = new IntersectionObserver(
+      ([entry]) => setNearFooter(entry.isIntersecting),
+      { rootMargin: "0px 0px -15% 0px" }
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="floating-actions">
+    <div className={`floating-actions ${nearFooter ? "is-hidden" : ""}`}>
       <a
         href={`https://wa.me/${contact.phoneHref.replace(/\D/g, "")}`}
         target="_blank"

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import LoginForm from "./LoginForm";
 
 export const metadata = {
@@ -10,7 +11,15 @@ export default function LoginPage() {
     <div className="auth">
       <aside className="auth-aside">
         <div className="auth-aside-inner">
-          <span className="brand-mark">✦</span>
+          <span className="brand-mark">
+            <Image
+              src="/logo/logo.png"
+              alt="Blessings by SEFD"
+              fill
+              sizes="64px"
+              style={{ objectFit: "contain" }}
+            />
+          </span>
           <h2>
             Welcome back to <em>Blessings.</em>
           </h2>

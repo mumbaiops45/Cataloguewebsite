@@ -97,6 +97,56 @@ export const partners = [
   "S.M. Shetty College",
 ];
 
+// The four pillars from the SEFD profile sheet — shown on the Our Story page.
+export const pillars = [
+  "Empowering Abilities",
+  "Creating Opportunities",
+  "Building Self Esteem",
+  "Promoting Inclusion",
+];
+
+// Corporate, institutional and social-institution clients, grouped as on the
+// SEFD "Esteemed Clients" sheet. Shown on the Our Story page.
+export const esteemedClients = {
+  corporate: [
+    "Kamani Foods",
+    "L&T",
+    "ESSAR Group",
+    "Axis Bank",
+    "GODREJ",
+    "SBI",
+    "Hiranandani Group",
+  ],
+  institutional: [
+    "Vivekanand College of Management",
+    "S.M. Shetty School & College",
+    "Hiranandani Foundation School",
+  ],
+  social: ["Rotary & Inner Wheel Clubs", "Lions Club", "Klub Nostalgia"],
+};
+
+// Founding chairman and current board — shown on the Our Story page.
+export const leadership = {
+  chairman: { name: "Late C R Balasubramanian", role: "Founding Chairman" },
+  directors: [
+    "Mrs. Meenal Mandlik",
+    "Mrs. Meenakshi B",
+    "Mr. Amit Dholakia",
+    "Mr. Prakash Chawla",
+  ],
+};
+
+// Partner NGOs whose beneficiaries' products SEFD markets alongside its own.
+export const partnerNgos = [
+  "MBA Foundation (Airoli)",
+  "Jagruti Palak Sanstha",
+  "Snehalaya (Thane)",
+  "Kruti Foundation",
+  "Adivasi Warli Kala Kendra (Jawhar, Thane)",
+  "Aarohan",
+  "Gurudev Bahuuddeshiya Samajik Sanstha",
+];
+
 // MBA Foundation / G.O.D.S — the founder associate NGO partner behind SEFD.
 export const ngoPartner = {
   name: "MBA Foundation — G.O.D.S",

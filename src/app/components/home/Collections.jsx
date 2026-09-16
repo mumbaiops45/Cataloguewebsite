@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "../anim/gsap";
@@ -48,42 +48,33 @@ const cards = [
 
 export default function Collections() {
   const section = useRef(null);
-  const track = useRef(null);
+  const [active, setActive] = useState(0);
+  const current = cards[active];
 
   useGSAP(
     () => {
       if (prefersReducedMotion()) return;
 
-      if (window.innerWidth < 760) {
-        gsap.from(gsap.utils.toArray(".collection-card", track.current), {
-          opacity: 0,
-          y: 28,
-          duration: 0.7,
-          ease: "power2.out",
-          stagger: 0.12,
-          scrollTrigger: { trigger: section.current, start: "top 80%" },
-        });
-        return;
-      }
-
-      const el = track.current;
-      const distance = () => el.scrollWidth - window.innerWidth + 80;
-
-      const tween = gsap.to(el, {
-        x: () => -distance(),
-        ease: "none",
-      });
-
-      ScrollTrigger.create({
+      // Pin the section and step through the cards one-by-one as the
+      // user scrolls, instead of jumping straight past it.
+      const trigger = ScrollTrigger.create({
         trigger: section.current,
         start: "top top",
-        end: () => "+=" + distance(),
+        end: () => "+=" + window.innerHeight * (cards.length - 1),
         pin: true,
-        scrub: 1,
-        animation: tween,
-        invalidateOnRefresh: true,
+        scrub: 0.4,
         anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const i = Math.min(
+            cards.length - 1,
+            Math.floor(self.progress * cards.length)
+          );
+          setActive(i);
+        },
       });
+
+      return () => trigger.kill();
     },
     { scope: section }
   );
@@ -108,28 +99,51 @@ export default function Collections() {
         </Link>
       </div>
 
-      <div className="htrack-viewport">
-        <div className="htrack" ref={track}>
-          {cards.map((c) => (
-            <Link href={c.href} key={c.name} className="collection-card">
-              <Image src={c.img} alt={c.name} fill sizes="460px" />
-              <div className="veil" />
-              <div className="meta">
-                <div>
-                  <span>{c.tag}</span>
-                  <h3>{c.name}</h3>
-                  <p>{c.copy}</p>
-                </div>
-                <span className="arrow">
-                  <ArrowUpRight size={18} />
+      <div className="wrap collections-showcase">
+        <ul className="collections-tabs" role="tablist">
+          {cards.map((c, i) => (
+            <li key={c.name}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={i === active}
+                className={
+                  "collections-tab" + (i === active ? " is-active" : "")
+                }
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                onClick={() => setActive(i)}
+              >
+                <span className="collections-tab-index">
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-              </div>
-            </Link>
+                <span className="collections-tab-name">{c.name}</span>
+                <ArrowUpRight size={16} className="collections-tab-arrow" />
+              </button>
+            </li>
           ))}
+        </ul>
+
+        <div className="collections-stage-media" key={current.name}>
+          <Image
+            src={current.img}
+            alt={current.name}
+            fill
+            sizes="(max-width: 759px) 60vw, 380px"
+            quality={90}
+            priority
+          />
+        </div>
+
+        <div className="collections-stage-meta" key={current.name + "-meta"}>
+          <span>{current.tag}</span>
+          <h3>{current.name}</h3>
+          <p>{current.copy}</p>
+          <Link href={current.href} className="collections-stage-cta">
+            Shop {current.name} <ArrowUpRight size={16} />
+          </Link>
         </div>
       </div>
-
-      <div className="wrap htrack-hint">Scroll to explore →</div>
     </section>
   );
 }
