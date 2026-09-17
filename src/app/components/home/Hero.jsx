@@ -158,31 +158,9 @@ export default function Hero() {
 
         <div className="hero-cta">
           <Link href="/shop" className="btn btn-orange">
-            Shop the range <ArrowUpRight size={16} />
-          </Link>
-          <Link
-            href="/about"
-            className="btn btn-ghost"
-            style={{ color: "#fff", borderColor: "rgba(255,255,255,0.4)" }}
-          >
-            Our story
+            Shop now <ArrowUpRight size={16} />
           </Link>
         </div>
-
-        <dl className="hero-meta">
-          <div>
-            <dt>2011</dt>
-            <dd>Founded in Navi Mumbai</dd>
-          </div>
-          <div>
-            <dt>200+</dt>
-            <dd>Artisans in gainful work</dd>
-          </div>
-          <div>
-            <dt>20+</dt>
-            <dd>Partner NGOs</dd>
-          </div>
-        </dl>
 
         <div className="hero-dots">
           {SLIDES.map((s, i) => (
@@ -193,11 +171,6 @@ export default function Hero() {
             />
           ))}
         </div>
-      </div>
-
-      <div className="hero-scroll">
-        Scroll
-        <span />
       </div>
     </section>
   );

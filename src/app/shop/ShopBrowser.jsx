@@ -21,6 +21,7 @@ export default function ShopBrowser() {
 
   const [cat, setCat] = useState(initial);
   const [sort, setSort] = useState("featured");
+  const [q, setQ] = useState(params.get("q") || "");
 
   const pick = (next) => {
     setCat(next);
@@ -30,12 +31,14 @@ export default function ShopBrowser() {
   };
 
   const list = useMemo(() => {
-    const filtered =
-      cat === "all"
-        ? products
-        : products.filter((p) => p.categorySlug === cat);
+    const needle = q.trim().toLowerCase();
+    const filtered = products.filter((p) => {
+      if (cat !== "all" && p.categorySlug !== cat) return false;
+      if (needle && !p.name.toLowerCase().includes(needle)) return false;
+      return true;
+    });
     return [...filtered].sort(SORTS[sort].fn);
-  }, [cat, sort]);
+  }, [cat, sort, q]);
 
   return (
     <>
@@ -60,6 +63,15 @@ export default function ShopBrowser() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <input
+              type="text"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search…"
+              aria-label="Search products"
+              className="sort-select"
+              style={{ minWidth: 160 }}
+            />
             <span className="shop-count">{list.length} items</span>
             <select
               className="sort-select"

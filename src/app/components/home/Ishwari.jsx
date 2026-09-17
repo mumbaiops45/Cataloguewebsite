@@ -27,7 +27,7 @@ export default function Ishwari() {
               keep as a blessing.
             </p>
             <ul className="ishwari-list">
-              {ishwariItems.slice(0, 10).map((it) => (
+              {ishwariItems.slice(0, 6).map((it) => (
                 <li key={it.name}>
                   <span>{it.name}</span>
                   <b>{it.price}</b>

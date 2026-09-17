@@ -4,8 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 export default function NotFound() {
   return (
     <section
-      className="section"
-      style={{ paddingTop: "clamp(120px, 11vw, 160px)", textAlign: "center" }}
+      className="section top-offset"
+      style={{ textAlign: "center" }}
     >
       <div className="wrap" style={{ maxWidth: 540 }}>
         <p className="eyebrow center" style={{ justifyContent: "center" }}>

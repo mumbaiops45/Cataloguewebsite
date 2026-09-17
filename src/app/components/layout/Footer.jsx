@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="footer-brand">
           <div className="footer-logo">
             <Image
-              src="/logo/logo.png"
+              src="/logo/logo-1.webp"
               alt="Blessings by SEFD"
               fill
               sizes="84px"
@@ -93,9 +93,9 @@ export default function Footer() {
             © {new Date().getFullYear()} Self Esteem Foundation for Disabled
           </span>
           <span className="footer-credit">
-            Designed &amp; developed by{" "}
+            Designed by{" "}
             <a
-              href="https://nakshatranamahacreations.com/"
+              href="https://www.nakshatranamahacreations.com/"
               target="_blank"
               rel="noopener noreferrer"
             >

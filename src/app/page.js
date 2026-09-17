@@ -1,33 +1,21 @@
 import Hero from "./components/home/Hero";
-import Ribbon from "./components/home/Ribbon";
-import Story from "./components/home/Story";
-import Gallery from "./components/home/Gallery";
+import Intro from "./components/home/Intro";
+import FeaturedProducts from "./components/home/FeaturedProducts";
 import Collections from "./components/home/Collections";
-import Ishwari from "./components/home/Ishwari";
-import IshwariShowcase from "./components/home/IshwariShowcase";
+import MidBanner from "./components/home/MidBanner";
 import Impact from "./components/home/Impact";
-import Process from "./components/home/Process";
-import Voices from "./components/home/Voices";
-import Partners from "./components/home/Partners";
-import Cta from "./components/home/Cta";
 import FloatingActions from "./components/home/FloatingActions";
 
 export default function Home() {
   return (
-    <>
+    <div className="homePage">
       <Hero />
-      <Ribbon />
-      <Story />
-      <Gallery />
+      <Intro />
+      <FeaturedProducts />
       <Collections />
-      <Ishwari />
-      <IshwariShowcase />
+      <MidBanner />
       <Impact />
-      <Process />
-      <Voices />
-      <Partners />
-      <Cta />
       <FloatingActions />
-    </>
+    </div >
   );
 }

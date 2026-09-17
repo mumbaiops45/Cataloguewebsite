@@ -2,10 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { useGSAP } from "@gsap/react";
+import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { gsap, ScrollTrigger, prefersReducedMotion } from "../anim/gsap";
 import SplitHeading from "../anim/SplitHeading";
 
 const cards = [
@@ -47,40 +45,11 @@ const cards = [
 ];
 
 export default function Collections() {
-  const section = useRef(null);
   const [active, setActive] = useState(0);
   const current = cards[active];
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) return;
-
-      // Pin the section and step through the cards one-by-one as the
-      // user scrolls, instead of jumping straight past it.
-      const trigger = ScrollTrigger.create({
-        trigger: section.current,
-        start: "top top",
-        end: () => "+=" + window.innerHeight * (cards.length - 1),
-        pin: true,
-        scrub: 0.4,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const i = Math.min(
-            cards.length - 1,
-            Math.floor(self.progress * cards.length)
-          );
-          setActive(i);
-        },
-      });
-
-      return () => trigger.kill();
-    },
-    { scope: section }
-  );
-
   return (
-    <section className="collections section" id="collections" ref={section}>
+    <section className="collections section" id="collections">
       <div className="wrap collections-head">
         <div>
           <p className="eyebrow">The range</p>
@@ -110,8 +79,6 @@ export default function Collections() {
                 className={
                   "collections-tab" + (i === active ? " is-active" : "")
                 }
-                onMouseEnter={() => setActive(i)}
-                onFocus={() => setActive(i)}
                 onClick={() => setActive(i)}
               >
                 <span className="collections-tab-index">

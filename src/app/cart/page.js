@@ -12,7 +12,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <section className="section" style={{ paddingTop: "clamp(120px, 11vw, 160px)" }}>
+      <section className="section top-offset">
         <div className="wrap" style={{ textAlign: "center", maxWidth: 560 }}>
           <ShoppingBag size={34} style={{ margin: "0 auto 20px", color: "var(--orange-deep)" }} />
           <SplitHeading as="h1" className="display-3">
@@ -42,7 +42,7 @@ export default function CartPage() {
   )}`;
 
   return (
-    <section className="section" style={{ paddingTop: "clamp(140px, 18vw, 190px)" }}>
+    <section className="section top-offset-lg">
       <div className="wrap">
         <SplitHeading as="h1" className="display-3">
           Your cart
@@ -88,11 +88,14 @@ export default function CartPage() {
             <b>{subtotalLabel}</b>
           </div>
           <p>
-            Online payment is on the way. Send this order to SEFD by email and
-            we&apos;ll confirm stock, delivery and payment.
+            Review your address and place the order, or send it to SEFD by
+            email and we&apos;ll confirm stock, delivery and payment.
           </p>
-          <a href={mailHref} className="btn btn-orange">
-            Send order enquiry <ArrowUpRight size={16} />
+          <Link href="/checkout" className="btn btn-tertiary">
+            Proceed to checkout <ArrowUpRight size={16} />
+          </Link>
+          <a href={mailHref} className="btn btn-ghost" style={{ marginTop: 10 }}>
+            Send order enquiry by email
           </a>
         </div>
       </div>

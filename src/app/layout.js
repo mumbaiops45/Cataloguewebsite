@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
             <Navbar />
 
             <SmoothScroll>
-              <main id="main">{children}</main>
+              <main id="main" >{children}</main>
               <Footer />
             </SmoothScroll>
 
