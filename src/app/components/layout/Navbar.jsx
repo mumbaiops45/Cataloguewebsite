@@ -6,15 +6,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ShoppingBag, ArrowUpRight, User, Search, ChevronDown, Tag } from "lucide-react";
 import { nav } from "../../lib/site";
-import { categories } from "../../lib/products";
 import { useCart } from "../cart/CartContext";
+import { useAuth } from "../auth/AuthContext";
 import { useLoginModal } from "../auth/LoginModalContext";
+import { useAccountDrawer } from "../auth/AccountDrawerContext";
 
-export default function Navbar() {
+export default function Navbar({ categories = [] }) {
   const pathname = usePathname();
   const router = useRouter();
   const { count } = useCart();
+  const { user } = useAuth();
   const { open: openLogin } = useLoginModal();
+  const { open: openAccount } = useAccountDrawer();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
@@ -108,10 +111,12 @@ export default function Navbar() {
             <button
               type="button"
               className="nav-login"
-              onClick={openLogin}
+              onClick={user ? openAccount : openLogin}
             >
               <User size={16} />
-              <span className="desktop-only">Log in</span>
+              <span className="desktop-only">
+                {user ? `Hi, ${user.name?.split(" ")[0] || "there"}` : "Log in"}
+              </span>
             </button>
             <Link href="/cart" className="cart-btn" aria-label="Cart">
               <ShoppingBag size={16} />
@@ -152,7 +157,13 @@ export default function Navbar() {
                     role="menuitem"
                     onClick={() => setCatOpen(false)}
                   >
-                    <Tag size={15} />
+                    <span className="nav-cat-thumb">
+                      {c.image ? (
+                        <Image src={c.image} alt="" fill sizes="28px" style={{ objectFit: "cover" }} />
+                      ) : (
+                        <Tag size={15} />
+                      )}
+                    </span>
                     {c.name}
                   </Link>
                 ))}
@@ -211,10 +222,11 @@ export default function Navbar() {
             className="mobile-login-btn"
             onClick={() => {
               setOpen(false);
-              openLogin();
+              if (user) openAccount();
+              else openLogin();
             }}
           >
-            Log in
+            {user ? `My account (${user.name?.split(" ")[0] || "account"})` : "Log in"}
           </button>
         </div>
         <div className="mobile-foot">

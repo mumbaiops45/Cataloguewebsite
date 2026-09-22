@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import SplitHeading from "../components/anim/SplitHeading";
 import ShopBrowser from "./ShopBrowser";
-import { products } from "../lib/products";
+import { getCatalog } from "../utils/catalog";
 
 export const metadata = {
   title: "Shop",
@@ -9,7 +9,11 @@ export const metadata = {
     "Every Blessings product is handmade by differently-abled artisans — Warli art, jute bags, cotton slings and file & stationery. Shop with purpose.",
 };
 
-export default function ShopPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ShopPage() {
+  const { categories, products } = await getCatalog().catch(() => ({ categories: [], products: [] }));
+
   return (
     <div className="shop-page">
       <header className="page-head">
@@ -26,7 +30,7 @@ export default function ShopPage() {
       </header>
 
       <Suspense fallback={<div className="wrap section-sm">Loading products…</div>}>
-        <ShopBrowser />
+        <ShopBrowser initialCategories={categories} initialProducts={products} />
       </Suspense>
     </div>
   );

@@ -5,8 +5,12 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SmoothScroll from "./components/anim/SmoothScroll";
 import { CartProvider } from "./components/cart/CartContext";
+import { AuthProvider } from "./components/auth/AuthContext";
 import { LoginModalProvider } from "./components/auth/LoginModalContext";
 import LoginModal from "./components/auth/LoginModal";
+import { AccountDrawerProvider } from "./components/auth/AccountDrawerContext";
+import AccountDrawer from "./components/auth/AccountDrawer";
+import { getCategoryList } from "./utils/catalog";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -45,7 +49,9 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const categories = await getCategoryList().catch(() => []);
+
   return (
     <html lang="en" className={rubik.variable}>
       <body suppressHydrationWarning>
@@ -53,18 +59,23 @@ export default function RootLayout({ children }) {
           Skip to content
         </a>
 
-        <CartProvider>
-          <LoginModalProvider>
-            <Navbar />
+        <AuthProvider>
+          <CartProvider>
+            <LoginModalProvider>
+              <AccountDrawerProvider>
+                <Navbar categories={categories} />
 
-            <SmoothScroll>
-              <main id="main" >{children}</main>
-              <Footer />
-            </SmoothScroll>
+                <SmoothScroll>
+                  <main id="main" >{children}</main>
+                  <Footer />
+                </SmoothScroll>
 
-            <LoginModal />
-          </LoginModalProvider>
-        </CartProvider>
+                <LoginModal />
+                <AccountDrawer />
+              </AccountDrawerProvider>
+            </LoginModalProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

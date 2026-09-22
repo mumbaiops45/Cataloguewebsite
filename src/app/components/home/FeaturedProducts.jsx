@@ -2,20 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../anim/Reveal";
-import { products } from "../../lib/products";
+import { getCatalog } from "../../utils/catalog";
 
-const featured = [
-  "warli-tea-coaster-set",
-  "warli-jewellery-tray",
-  "green-warli-coaster-set",
-  "block-print-jute-bag",
-  "warli-dancers-jute-bag",
-  "floral-tote-bag",
-  "brocade-handbag",
-  "jute-document-holder",
-].map((slug) => products.find((p) => p.slug === slug)).filter(Boolean);
+export default async function FeaturedProducts() {
+  const { products } = await getCatalog().catch(() => ({ products: [] }));
+  const featured = products.slice(0, 8);
 
-export default function FeaturedProducts() {
+  if (featured.length === 0) return null;
+
   return (
     <section className="featured section" id="featured">
       <div className="wrap">
@@ -33,7 +27,7 @@ export default function FeaturedProducts() {
             <article className="product-card" key={p.slug}>
               <Link href={`/shop/${p.slug}`} className="frame">
                 <Image
-                  src={p.image}
+                  src={p.image || "/file.svg"}
                   alt={p.name}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"

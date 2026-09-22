@@ -4,6 +4,9 @@ const nextConfig = {
   reactCompiler: true,
   images: {
     qualities: [75, 90, 100],
+    remotePatterns: [
+      { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
+    ],
   },
 };
 

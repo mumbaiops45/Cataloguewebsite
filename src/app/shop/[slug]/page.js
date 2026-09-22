@@ -3,30 +3,30 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, ArrowLeft, ShieldCheck, Truck, Sparkles } from "lucide-react";
 import Reveal from "../../components/anim/Reveal";
-import { products, getProduct, getRelatedProducts } from "../../lib/products";
+import { getCatalog, getProductFromList, getRelatedFromList } from "../../utils/catalog";
 import ProductActions from "./ProductActions";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const { products } = await getCatalog().catch(() => ({ products: [] }));
+  const product = getProductFromList(products, slug);
   if (!product) return {};
   return {
     title: product.name,
     description: product.description,
-    openGraph: { images: [product.image] },
+    openGraph: { images: product.image ? [product.image] : [] },
   };
 }
 
 export default async function ProductPage({ params }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const { products } = await getCatalog().catch(() => ({ products: [] }));
+  const product = getProductFromList(products, slug);
   if (!product) notFound();
 
-  const related = getRelatedProducts(product, 4);
+  const related = getRelatedFromList(products, product, 4);
 
   return (
     <div className="pdp wrap section-sm">
@@ -44,7 +44,7 @@ export default async function ProductPage({ params }) {
         <Reveal className="pdp-media">
           <span className="pdp-media-badge">Handmade</span>
           <Image
-            src={product.image}
+            src={product.image || "/file.svg"}
             alt={product.name}
             fill
             priority
@@ -57,7 +57,7 @@ export default async function ProductPage({ params }) {
           <h1>{product.name}</h1>
           <p className="price">
             {product.priceLabel}
-            <span className="tag">In stock</span>
+            <span className="tag">{product.stock > 0 ? "In stock" : "Out of stock"}</span>
           </p>
           <p>{product.description}</p>
 
@@ -105,7 +105,7 @@ export default async function ProductPage({ params }) {
             {related.map((p, i) => (
               <article className="product-card" key={p.slug}>
                 <Link href={`/shop/${p.slug}`} className="frame">
-                  <Image src={p.image} alt={p.name} fill sizes="25vw" />
+                  <Image src={p.image || "/file.svg"} alt={p.name} fill sizes="25vw" />
                   <span className="idx">{String(i + 1).padStart(2, "0")}</span>
                   <span className="cta-mini">
                     <ArrowUpRight size={17} />

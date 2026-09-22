@@ -6,25 +6,30 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
-import { products, categories } from "../lib/products";
 
 const SORTS = {
-  featured: { label: "Featured", fn: (a, b) => a.id - b.id },
+  featured: { label: "Featured", fn: () => 0 },
   "price-asc": { label: "Price · low to high", fn: (a, b) => a.price - b.price },
   "price-desc": { label: "Price · high to low", fn: (a, b) => b.price - a.price },
   name: { label: "A – Z", fn: (a, b) => a.name.localeCompare(b.name) },
 };
 
-export default function ShopBrowser() {
+const PAGE_SIZE = 12;
+
+export default function ShopBrowser({ initialCategories = [], initialProducts = [] }) {
   const params = useSearchParams();
   const initial = params.get("category") || "all";
 
+  const [categories] = useState(initialCategories);
+  const [products] = useState(initialProducts);
   const [cat, setCat] = useState(initial);
   const [sort, setSort] = useState("featured");
   const [q, setQ] = useState(params.get("q") || "");
+  const [page, setPage] = useState(1);
 
   const pick = (next) => {
     setCat(next);
+    setPage(1);
     const url =
       next === "all" ? "/shop" : `/shop?category=${next}`;
     window.history.replaceState(null, "", url);
@@ -38,7 +43,14 @@ export default function ShopBrowser() {
       return true;
     });
     return [...filtered].sort(SORTS[sort].fn);
-  }, [cat, sort, q]);
+  }, [cat, sort, q, products]);
+
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageList = useMemo(
+    () => list.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [list, currentPage]
+  );
 
   return (
     <>
@@ -66,7 +78,10 @@ export default function ShopBrowser() {
             <input
               type="text"
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => {
+                setQ(e.target.value);
+                setPage(1);
+              }}
               placeholder="Search…"
               aria-label="Search products"
               className="sort-select"
@@ -76,7 +91,10 @@ export default function ShopBrowser() {
             <select
               className="sort-select"
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setPage(1);
+              }}
               aria-label="Sort products"
             >
               {Object.entries(SORTS).map(([k, v]) => (
@@ -90,17 +108,17 @@ export default function ShopBrowser() {
       </div>
 
       <section className="wrap section-sm">
-        <Reveal className="product-grid" stagger scroll={false} y={20} key={cat + sort}>
-          {list.map((p, i) => (
+        <Reveal className="product-grid" stagger scroll={false} y={20} key={cat + sort + currentPage}>
+          {pageList.map((p, i) => (
             <article className="product-card" key={p.slug}>
               <Link href={`/shop/${p.slug}`} className="frame">
                 <Image
-                  src={p.image}
+                  src={p.image || "/file.svg"}
                   alt={p.name}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
                 />
-                <span className="idx">{String(i + 1).padStart(2, "0")}</span>
+                <span className="idx">{String((currentPage - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}</span>
                 <span className="cta-mini">
                   <ArrowUpRight size={17} />
                 </span>
@@ -121,6 +139,34 @@ export default function ShopBrowser() {
             <p className="shop-empty">Nothing here yet — try another category.</p>
           )}
         </Reveal>
+
+        {totalPages > 1 && (
+          <nav className="shop-pagination" aria-label="Product pages">
+            <button
+              className="filter"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                className={`filter ${n === currentPage ? "active" : ""}`}
+                onClick={() => setPage(n)}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              className="filter"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </nav>
+        )}
       </section>
     </>
   );
