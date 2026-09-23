@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, ArrowLeft, ShieldCheck, Truck, Sparkles } from "lucide-react";
 import Reveal from "../../components/anim/Reveal";
+import ScrollToTop from "../../components/anim/ScrollToTop";
+import AddToCartButton from "../../components/cart/AddToCartButton";
 import { getCatalog, getProductFromList, getRelatedFromList } from "../../utils/catalog";
 import ProductActions from "./ProductActions";
 
@@ -30,6 +32,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <div className="pdp wrap section-sm">
+      <ScrollToTop />
       <div className="breadcrumb">
         <Link href="/shop">Shop</Link>
         <span>/</span>
@@ -104,13 +107,16 @@ export default async function ProductPage({ params }) {
           <Reveal className="product-grid" stagger scroll={false} y={20}>
             {related.map((p, i) => (
               <article className="product-card" key={p.slug}>
-                <Link href={`/shop/${p.slug}`} className="frame">
-                  <Image src={p.image || "/file.svg"} alt={p.name} fill sizes="25vw" />
-                  <span className="idx">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="cta-mini">
-                    <ArrowUpRight size={17} />
-                  </span>
-                </Link>
+                <div className="frame-wrap">
+                  <Link href={`/shop/${p.slug}`} className="frame">
+                    <Image src={p.image || "/file.svg"} alt={p.name} fill sizes="25vw" />
+                    <span className="idx">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="cta-mini">
+                      <ArrowUpRight size={17} />
+                    </span>
+                  </Link>
+                  <AddToCartButton product={p} />
+                </div>
                 <div className="product-meta">
                   <div>
                     <span className="cat">{p.category}</span>

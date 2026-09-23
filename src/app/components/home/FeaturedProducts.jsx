@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../anim/Reveal";
+import AddToCartButton from "../cart/AddToCartButton";
 import { getCatalog } from "../../utils/catalog";
 
 export default async function FeaturedProducts() {
@@ -25,18 +26,21 @@ export default async function FeaturedProducts() {
         <Reveal className="product-grid" stagger scroll y={20}>
           {featured.map((p, i) => (
             <article className="product-card" key={p.slug}>
-              <Link href={`/shop/${p.slug}`} className="frame">
-                <Image
-                  src={p.image || "/file.svg"}
-                  alt={p.name}
-                  fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
-                />
-                <span className="idx">{String(i + 1).padStart(2, "0")}</span>
-                <span className="cta-mini">
-                  <ArrowUpRight size={17} />
-                </span>
-              </Link>
+              <div className="frame-wrap">
+                <Link href={`/shop/${p.slug}`} className="frame">
+                  <Image
+                    src={p.image || "/file.svg"}
+                    alt={p.name}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
+                  />
+                  <span className="idx">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="cta-mini">
+                    <ArrowUpRight size={17} />
+                  </span>
+                </Link>
+                <AddToCartButton product={p} />
+              </div>
               <div className="product-meta">
                 <div>
                   <span className="cat">{p.category}</span>

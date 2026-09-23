@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
+import AddToCartButton from "../components/cart/AddToCartButton";
 
 const SORTS = {
   featured: { label: "Featured", fn: () => 0 },
@@ -111,18 +112,21 @@ export default function ShopBrowser({ initialCategories = [], initialProducts = 
         <Reveal className="product-grid" stagger scroll={false} y={20} key={cat + sort + currentPage}>
           {pageList.map((p, i) => (
             <article className="product-card" key={p.slug}>
-              <Link href={`/shop/${p.slug}`} className="frame">
-                <Image
-                  src={p.image || "/file.svg"}
-                  alt={p.name}
-                  fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
-                />
-                <span className="idx">{String((currentPage - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}</span>
-                <span className="cta-mini">
-                  <ArrowUpRight size={17} />
-                </span>
-              </Link>
+              <div className="frame-wrap">
+                <Link href={`/shop/${p.slug}`} className="frame">
+                  <Image
+                    src={p.image || "/file.svg"}
+                    alt={p.name}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
+                  />
+                  <span className="idx">{String((currentPage - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}</span>
+                  <span className="cta-mini">
+                    <ArrowUpRight size={17} />
+                  </span>
+                </Link>
+                <AddToCartButton product={p} />
+              </div>
               <div className="product-meta">
                 <div>
                   <span className="cat">{p.category}</span>

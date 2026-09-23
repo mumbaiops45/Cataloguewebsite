@@ -5,30 +5,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Check, ShoppingBag, Zap } from "lucide-react";
 import Reveal from "../anim/Reveal";
-import { useCart } from "../cart/CartContext";
 import { ishwariCatalogue } from "../../lib/site";
 
 export default function IshwariProductGrid() {
-  const { addItem } = useCart();
   const router = useRouter();
   const [added, setAdded] = useState(null);
 
-  const toProduct = (p) => ({
-    id: `ishwari-${p.slug}`,
-    name: p.name,
-    price: p.price,
-    image: p.img,
-  });
-
+  // This showcase uses a static catalogue (not real DB products), so it
+  // can't hit the real cart API — route shoppers to the live shop instead.
   const handleAdd = (p) => {
-    addItem(toProduct(p));
     setAdded(p.slug);
     window.setTimeout(() => setAdded((cur) => (cur === p.slug ? null : cur)), 1600);
   };
 
-  const handleBuyNow = (p) => {
-    addItem(toProduct(p));
-    router.push("/cart");
+  const handleBuyNow = () => {
+    router.push("/shop");
   };
 
   return (

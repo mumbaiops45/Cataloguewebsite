@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight, MapPin, User2, ShoppingBag } from "lucide-react";
 import SplitHeading from "../components/anim/SplitHeading";
-import { useCart } from "../components/cart/CartContext";
+import { useCartStore } from "../store/cartStore";
 import { contact } from "../lib/site";
 
 const emptyForm = {
@@ -21,10 +21,14 @@ const emptyForm = {
 };
 
 export default function CheckoutPage() {
-  const { items, subtotal } = useCart();
+  const rawItems = useCartStore((s) => s.items);
+  const catalogMap = useCartStore((s) => s.catalogMap);
   const [form, setForm] = useState(emptyForm);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const items = rawItems.map((it) => ({ ...it, product: catalogMap.get(it.productId) }));
+  const subtotal = items.reduce((n, it) => n + it.quantity * (it.product?.price || 0), 0);
 
   if (items.length === 0) {
     return (
@@ -50,7 +54,7 @@ export default function CheckoutPage() {
   const fmt = (n) => `₹${n.toLocaleString("en-IN")}`;
 
   const orderBody = items
-    .map((it) => `• ${it.name} × ${it.qty} — ${fmt(it.price * it.qty)}`)
+    .map((it) => `• ${it.product?.name || "Product"} × ${it.quantity} — ${fmt((it.product?.price || 0) * it.quantity)}`)
     .join("%0D%0A");
   const mailHref = `mailto:${contact.email}?subject=${encodeURIComponent(
     "New order — Blessings by SEFD"
@@ -129,15 +133,17 @@ export default function CheckoutPage() {
             <h2>Order summary</h2>
             <div className="checkout-items">
               {items.map((it) => (
-                <div className="checkout-item" key={it.id}>
+                <div className="checkout-item" key={it.productId}>
                   <div className="checkout-item-media">
-                    <Image src={it.image} alt={it.name} fill sizes="52px" style={{ objectFit: "contain" }} />
+                    {it.product?.image && (
+                      <Image src={it.product.image} alt={it.product.name} fill sizes="52px" style={{ objectFit: "contain" }} />
+                    )}
                   </div>
                   <div className="checkout-item-info">
-                    <b>{it.name}</b>
-                    <span>Qty {it.qty}</span>
+                    <b>{it.product?.name || "Product"}</b>
+                    <span>Qty {it.quantity}</span>
                   </div>
-                  <div className="checkout-item-price">{fmt(it.price * it.qty)}</div>
+                  <div className="checkout-item-price">{fmt((it.product?.price || 0) * it.quantity)}</div>
                 </div>
               ))}
             </div>

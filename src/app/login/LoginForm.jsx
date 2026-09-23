@@ -29,10 +29,25 @@ export default function LoginForm() {
     setMode(next);
   };
 
+  const validate = () => {
+    if (mode === "register" && !form.name.trim()) return "Please enter your full name.";
+    if (!form.email.trim()) return "Please enter your email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Please enter a valid email address.";
+    if (mode === "register" && !form.phone.trim()) return "Please enter your phone number.";
+    if (!form.password) return "Please enter your password.";
+    if (mode === "register" && form.password.length < 8) return "Password must be at least 8 characters.";
+    return "";
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setNotice("");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError("");
     setLoading(true);
     try {
       if (mode === "login") {
@@ -74,7 +89,7 @@ export default function LoginForm() {
       <p className="eyebrow">Account</p>
       <h1>{mode === "login" ? "Log in" : "Create your account"}</h1>
 
-      <form className="auth-form" onSubmit={onSubmit}>
+      <form className="auth-form" onSubmit={onSubmit} noValidate>
         {mode === "register" && (
           <div className="field">
             <label htmlFor="name">Full name</label>
@@ -83,7 +98,6 @@ export default function LoginForm() {
               name="name"
               type="text"
               autoComplete="name"
-              required
               placeholder="Your name"
               value={form.name}
               onChange={set("name")}
@@ -98,7 +112,6 @@ export default function LoginForm() {
             name="email"
             type="email"
             autoComplete="email"
-            required
             placeholder="you@example.com"
             value={form.email}
             onChange={set("email")}
@@ -113,7 +126,6 @@ export default function LoginForm() {
               name="phone"
               type="tel"
               autoComplete="tel"
-              required
               placeholder="10-digit mobile number"
               value={form.phone}
               onChange={set("phone")}
@@ -129,8 +141,6 @@ export default function LoginForm() {
               name="password"
               type={show ? "text" : "password"}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
-              required
-              minLength={mode === "register" ? 8 : undefined}
               placeholder="••••••••"
               value={form.password}
               onChange={set("password")}

@@ -3,23 +3,52 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, ShoppingBag, Zap } from "lucide-react";
-import { useCart } from "../../components/cart/CartContext";
+import { useCartStore } from "../../store/cartStore";
+import { useAuth } from "../../components/auth/AuthContext";
+import { useLoginModal } from "../../components/auth/LoginModalContext";
 
 export default function ProductActions({ product }) {
-  const { addItem } = useCart();
+  const addToCart = useCartStore((s) => s.addToCart);
+  const openDrawer = useCartStore((s) => s.openDrawer);
+  const { user } = useAuth();
+  const { open: openLogin } = useLoginModal();
   const router = useRouter();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [pending, setPending] = useState(false);
 
-  const handleAdd = () => {
-    addItem(product, qty);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+  const handleAdd = async () => {
+    if (!user) {
+      openLogin();
+      return;
+    }
+    setPending(true);
+    try {
+      await addToCart(product, qty);
+      setAdded(true);
+      openDrawer();
+      setTimeout(() => setAdded(false), 1800);
+    } catch {
+      // error surfaced via the cart store; nothing more to do here
+    } finally {
+      setPending(false);
+    }
   };
 
-  const handleBuyNow = () => {
-    addItem(product, qty);
-    router.push("/checkout");
+  const handleBuyNow = async () => {
+    if (!user) {
+      openLogin();
+      return;
+    }
+    setPending(true);
+    try {
+      await addToCart(product, qty);
+      router.push("/checkout");
+    } catch {
+      // error surfaced via the cart store; nothing more to do here
+    } finally {
+      setPending(false);
+    }
   };
 
   return (
@@ -38,10 +67,10 @@ export default function ProductActions({ product }) {
       </div>
 
       <div className="pdp-actions">
-        <button type="button" className="btn btn-tertiary" onClick={handleAdd}>
+        <button type="button" className="btn btn-tertiary" onClick={handleAdd} disabled={pending}>
           <ShoppingBag size={16} /> {added ? "Added ✓" : "Add to cart"}
         </button>
-        <button type="button" className="btn btn-orange" onClick={handleBuyNow}>
+        <button type="button" className="btn btn-orange" onClick={handleBuyNow} disabled={pending}>
           <Zap size={16} /> Buy now
         </button>
       </div>

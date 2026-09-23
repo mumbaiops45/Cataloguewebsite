@@ -4,7 +4,8 @@ import { Rubik } from "next/font/google";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import SmoothScroll from "./components/anim/SmoothScroll";
-import { CartProvider } from "./components/cart/CartContext";
+import CartDrawer from "./components/cart/CartDrawer";
+import ToastHost from "./components/layout/ToastHost";
 import { AuthProvider } from "./components/auth/AuthContext";
 import { LoginModalProvider } from "./components/auth/LoginModalContext";
 import LoginModal from "./components/auth/LoginModal";
@@ -60,21 +61,21 @@ export default async function RootLayout({ children }) {
         </a>
 
         <AuthProvider>
-          <CartProvider>
-            <LoginModalProvider>
-              <AccountDrawerProvider>
-                <Navbar categories={categories} />
+          <LoginModalProvider>
+            <AccountDrawerProvider>
+              <Navbar categories={categories} />
 
-                <SmoothScroll>
-                  <main id="main" >{children}</main>
-                  <Footer />
-                </SmoothScroll>
+              <SmoothScroll>
+                <main id="main" >{children}</main>
+                <Footer />
+              </SmoothScroll>
 
-                <LoginModal />
-                <AccountDrawer />
-              </AccountDrawerProvider>
-            </LoginModalProvider>
-          </CartProvider>
+              <LoginModal />
+              <AccountDrawer />
+              <CartDrawer />
+              <ToastHost />
+            </AccountDrawerProvider>
+          </LoginModalProvider>
         </AuthProvider>
       </body>
     </html>

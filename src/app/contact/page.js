@@ -1,6 +1,7 @@
 import { Phone, Mail, MapPin, Globe } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
+import ContactForm from "./ContactForm";
 import { contact } from "../lib/site";
 
 export const metadata = {
@@ -55,28 +56,7 @@ export default function ContactPage() {
 
           <Reveal>
             <p className="eyebrow">Send a message</p>
-            <form
-              style={{ marginTop: 20 }}
-              action={contact.emailHref}
-              method="post"
-              encType="text/plain"
-            >
-              <div className="field">
-                <label htmlFor="name">Name</label>
-                <input id="name" name="name" type="text" required />
-              </div>
-              <div className="field">
-                <label htmlFor="email">Email</label>
-                <input id="email" name="email" type="email" required />
-              </div>
-              <div className="field">
-                <label htmlFor="message">How can we help?</label>
-                <textarea id="message" name="message" rows={5} required />
-              </div>
-              <button type="submit" className="btn btn-orange">
-                Send enquiry
-              </button>
-            </form>
+            <ContactForm />
           </Reveal>
         </div>
       </section>

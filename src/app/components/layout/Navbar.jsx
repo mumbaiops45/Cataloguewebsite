@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ShoppingBag, ArrowUpRight, User, Search, ChevronDown, Tag } from "lucide-react";
 import { nav } from "../../lib/site";
-import { useCart } from "../cart/CartContext";
+import { useCartStore, selectCartCount } from "../../store/cartStore";
 import { useAuth } from "../auth/AuthContext";
 import { useLoginModal } from "../auth/LoginModalContext";
 import { useAccountDrawer } from "../auth/AccountDrawerContext";
@@ -14,7 +14,10 @@ import { useAccountDrawer } from "../auth/AccountDrawerContext";
 export default function Navbar({ categories = [] }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { count } = useCart();
+  const count = useCartStore(selectCartCount);
+  const openCartDrawer = useCartStore((s) => s.openDrawer);
+  const fetchCart = useCartStore((s) => s.fetchCart);
+  const resetCart = useCartStore((s) => s.reset);
   const { user } = useAuth();
   const { open: openLogin } = useLoginModal();
   const { open: openAccount } = useAccountDrawer();
@@ -45,6 +48,10 @@ export default function Navbar({ categories = [] }) {
     setOpen(false);
     setCatOpen(false);
   }, [pathname]);
+  useEffect(() => {
+    if (user) fetchCart();
+    else resetCart();
+  }, [user, fetchCart, resetCart]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -110,19 +117,27 @@ export default function Navbar({ categories = [] }) {
           <div className="nav-actions">
             <button
               type="button"
-              className="nav-login"
+              className={`nav-login ${user ? "" : "is-guest"}`.trim()}
               onClick={user ? openAccount : openLogin}
+              aria-label={user ? "Your account" : "Log in"}
             >
-              <User size={16} />
-              <span className="desktop-only">
-                {user ? `Hi, ${user.name?.split(" ")[0] || "there"}` : "Log in"}
+              {user ? (
+                <>
+                  <span className="nav-login-avatar">
+                    <User size={15} strokeWidth={2.5} />
+                  </span>
+                  <span className="nav-login-name">{user.name?.split(" ")[0] || "Account"}</span>
+                </>
+              ) : (
+                <User size={18} strokeWidth={2.5} />
+              )}
+            </button>
+            <button type="button" className="cart-btn" aria-label="Cart" onClick={openCartDrawer}>
+              <span className="cart-icon">
+                <ShoppingBag size={16} strokeWidth={2.5} />
+                {count > 0 && <span className="cart-count">{count}</span>}
               </span>
             </button>
-            <Link href="/cart" className="cart-btn" aria-label="Cart">
-              <ShoppingBag size={16} />
-              <span className="cart-text desktop-only">Cart</span>
-              <span className="cart-count">{count}</span>
-            </Link>
             <button
               className="burger"
               onClick={() => setOpen((v) => !v)}

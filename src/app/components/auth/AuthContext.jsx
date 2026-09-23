@@ -26,6 +26,18 @@ function writeProfile(profile) {
   }
 }
 
+// Prefer whatever the JWT itself carries (fresh, works on any device) and
+// only fall back to the locally-cached profile (from a prior register/login
+// in this browser) when the token doesn't include it.
+function mergeIdentity(decoded, profile) {
+  return {
+    id: decoded?._id,
+    role: decoded?.role,
+    name: decoded?.name || profile?.name,
+    email: decoded?.email || profile?.email,
+  };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
@@ -37,7 +49,7 @@ export function AuthProvider({ children }) {
       if (token) {
         const decoded = decodeJwt(token);
         if (decoded && !cancelled) {
-          setUser({ id: decoded._id, role: decoded.role, ...readProfile() });
+          setUser(mergeIdentity(decoded, readProfile()));
         } else if (!decoded) {
           setToken(null);
         }
@@ -49,15 +61,16 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // The backend only returns { token } on login (no user payload), so we
-  // keep the entered email + whatever name we already know locally.
+  // Login now returns { token, user: { name } } — use that name directly.
+  // (Accept a flat { token, name } shape too, in case the response isn't
+  // nested exactly the same way on every backend build.)
   const login = async (email, password) => {
     const data = await loginCustomer(email, password);
     setToken(data.token);
     const decoded = decodeJwt(data.token);
-    const profile = { email, name: readProfile()?.email === email ? readProfile()?.name : undefined };
+    const profile = { email, name: data.user?.name || data.name };
     writeProfile(profile);
-    const nextUser = { id: decoded?._id, role: decoded?.role, ...profile };
+    const nextUser = mergeIdentity(decoded, profile);
     setUser(nextUser);
     return nextUser;
   };

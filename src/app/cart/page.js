@@ -1,16 +1,65 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import SplitHeading from "../components/anim/SplitHeading";
-import { useCart } from "../components/cart/CartContext";
+import { useCartStore } from "../store/cartStore";
+import { useAuth } from "../components/auth/AuthContext";
+import { useLoginModal } from "../components/auth/LoginModalContext";
 import { contact } from "../lib/site";
 
 export default function CartPage() {
-  const { items, setQty, removeItem, subtotal } = useCart();
+  const items = useCartStore((s) => s.items);
+  const catalogMap = useCartStore((s) => s.catalogMap);
+  const loading = useCartStore((s) => s.loading);
+  const hasFetched = useCartStore((s) => s.hasFetched);
+  const fetchCart = useCartStore((s) => s.fetchCart);
+  const incrementItem = useCartStore((s) => s.incrementItem);
+  const decrementItem = useCartStore((s) => s.decrementItem);
+  const removeItem = useCartStore((s) => s.removeItem);
+  const clearCart = useCartStore((s) => s.clearCart);
+  const { user, ready } = useAuth();
+  const { open: openLogin } = useLoginModal();
 
-  if (items.length === 0) {
+  useEffect(() => {
+    if (user && !hasFetched) fetchCart();
+  }, [user, hasFetched, fetchCart]);
+
+  const rows = items.map((it) => ({ ...it, product: catalogMap.get(it.productId) }));
+  const subtotal = rows.reduce((n, it) => n + it.quantity * (it.product?.price || 0), 0);
+
+  if (ready && !user) {
+    return (
+      <section className="section top-offset">
+        <div className="wrap" style={{ textAlign: "center", maxWidth: 560 }}>
+          <ShoppingBag size={34} style={{ margin: "0 auto 20px", color: "var(--orange-deep)" }} />
+          <SplitHeading as="h1" className="display-3">
+            Log in to see your cart.
+          </SplitHeading>
+          <p className="lead" style={{ margin: "20px auto 32px" }}>
+            Your cart is saved to your account — log in to view and manage it.
+          </p>
+          <button type="button" className="btn btn-orange" onClick={openLogin}>
+            Log in
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (loading && !hasFetched) {
+    return (
+      <section className="section top-offset">
+        <div className="wrap" style={{ textAlign: "center" }}>
+          <p className="lead">Loading your cart…</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (rows.length === 0) {
     return (
       <section className="section top-offset">
         <div className="wrap" style={{ textAlign: "center", maxWidth: 560 }}>
@@ -32,8 +81,8 @@ export default function CartPage() {
 
   const subtotalLabel = `₹${subtotal.toLocaleString("en-IN")}`;
 
-  const orderBody = items
-    .map((it) => `• ${it.name} × ${it.qty} — ₹${(it.price * it.qty).toLocaleString("en-IN")}`)
+  const orderBody = rows
+    .map((it) => `• ${it.product?.name || "Product"} × ${it.quantity} — ₹${(it.quantity * (it.product?.price || 0)).toLocaleString("en-IN")}`)
     .join("%0D%0A");
   const mailHref = `mailto:${contact.email}?subject=${encodeURIComponent(
     "Order enquiry — Blessings by SEFD"
@@ -44,37 +93,51 @@ export default function CartPage() {
   return (
     <section className="section top-offset-lg">
       <div className="wrap">
-        <SplitHeading as="h1" className="display-3">
-          Your cart
-        </SplitHeading>
+        <div className="cart-page-head">
+          <SplitHeading as="h1" className="display-3">
+            Your cart
+          </SplitHeading>
+          <button type="button" className="cart-drawer-clear" onClick={clearCart}>
+            Clear cart
+          </button>
+        </div>
 
-        <div className="cart-list" style={{ marginTop: 40 }}>
-          {items.map((it) => (
-            <div className="cart-row" key={it.id}>
+        <div className="cart-list" style={{ marginTop: 24 }}>
+          {rows.map((it) => (
+            <div className="cart-row" key={it.productId}>
               <div className="cart-row-media">
-                <Image src={it.image} alt={it.name} fill sizes="96px" style={{ objectFit: "contain" }} />
+                {it.product?.image ? (
+                  <Image src={it.product.image} alt={it.product.name} fill sizes="96px" style={{ objectFit: "contain" }} />
+                ) : (
+                  <ShoppingBag size={24} />
+                )}
               </div>
               <div className="cart-row-info">
-                <h3>{it.name}</h3>
-                <span className="price">₹{it.price.toLocaleString("en-IN")}</span>
+                <h3>{it.product?.name || "Product"}</h3>
+                <span className="price">₹{Number(it.product?.price || 0).toLocaleString("en-IN")}</span>
               </div>
               <div className="qty-stepper">
-                <button type="button" onClick={() => setQty(it.id, it.qty - 1)} aria-label="Decrease quantity">
+                <button
+                  type="button"
+                  onClick={() => decrementItem(it.productId)}
+                  disabled={it.quantity <= 1}
+                  aria-label="Decrease quantity"
+                >
                   <Minus size={14} />
                 </button>
-                <span>{it.qty}</span>
-                <button type="button" onClick={() => setQty(it.id, it.qty + 1)} aria-label="Increase quantity">
+                <span>{it.quantity}</span>
+                <button type="button" onClick={() => incrementItem(it.productId)} aria-label="Increase quantity">
                   <Plus size={14} />
                 </button>
               </div>
               <div className="cart-row-total">
-                ₹{(it.price * it.qty).toLocaleString("en-IN")}
+                ₹{(it.quantity * (it.product?.price || 0)).toLocaleString("en-IN")}
               </div>
               <button
                 type="button"
                 className="cart-remove"
-                onClick={() => removeItem(it.id)}
-                aria-label={`Remove ${it.name}`}
+                onClick={() => removeItem(it.productId)}
+                aria-label={`Remove ${it.product?.name || "item"}`}
               >
                 <Trash2 size={16} />
               </button>
