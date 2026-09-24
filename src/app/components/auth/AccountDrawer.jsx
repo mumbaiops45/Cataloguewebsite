@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { X, LayoutDashboard, LogOut, User } from "lucide-react";
+import { X, LayoutDashboard, LogOut, MapPin, Package, User } from "lucide-react";
 import { useAccountDrawer } from "./AccountDrawerContext";
 import { useAuth } from "./AuthContext";
 
@@ -68,6 +68,12 @@ export default function AccountDrawer() {
         <nav className="account-drawer-nav">
           <Link href="/account" className="account-drawer-link" onClick={close}>
             <LayoutDashboard size={17} /> My account
+          </Link>
+          <Link href="/account#orders" className="account-drawer-link" onClick={close}>
+            <Package size={17} /> My orders
+          </Link>
+          <Link href="/account#addresses" className="account-drawer-link" onClick={close}>
+            <MapPin size={17} /> Addresses
           </Link>
         </nav>
 

@@ -2,33 +2,62 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowUpRight, MapPin, User2, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, MapPin, ShoppingBag, CreditCard } from "lucide-react";
 import SplitHeading from "../components/anim/SplitHeading";
+import AddressManager from "../components/account/AddressManager";
 import { useCartStore } from "../store/cartStore";
-import { contact } from "../lib/site";
+import { useAuth } from "../components/auth/AuthContext";
+import { useLoginModal } from "../components/auth/LoginModalContext";
+import { createOrder } from "../router/order.router";
+import { getAddresses } from "../router/address.router";
+import { payForOrder } from "../utils/razorpay";
+import { toast } from "../store/toastStore";
 
-const emptyForm = {
-  name: "",
-  phone: "",
-  email: "",
-  address1: "",
-  address2: "",
-  city: "",
-  state: "",
-  pincode: "",
-  notes: "",
-};
+// matches the flat shipping fee the backend applies to every order
+const SHIPPING_FEE = 60;
+const fmt = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const { user, ready } = useAuth();
+  const { open: openLogin } = useLoginModal();
   const rawItems = useCartStore((s) => s.items);
   const catalogMap = useCartStore((s) => s.catalogMap);
-  const [form, setForm] = useState(emptyForm);
+  const hasFetched = useCartStore((s) => s.hasFetched);
+  const fetchCart = useCartStore((s) => s.fetchCart);
+  const [addressId, setAddressId] = useState(null);
+  const [paying, setPaying] = useState(false);
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  useEffect(() => {
+    if (user && !hasFetched) fetchCart();
+  }, [user, hasFetched, fetchCart]);
 
   const items = rawItems.map((it) => ({ ...it, product: catalogMap.get(it.productId) }));
   const subtotal = items.reduce((n, it) => n + it.quantity * (it.product?.price || 0), 0);
+  const total = subtotal + SHIPPING_FEE;
+
+  if (ready && !user) {
+    return (
+      <section className="checkout section top-offset">
+        <div className="wrap" style={{ textAlign: "center", maxWidth: 560 }}>
+          <ShoppingBag size={34} style={{ margin: "0 auto 20px", color: "var(--orange-deep)" }} />
+          <SplitHeading as="h1" className="display-3">
+            Log in to check out.
+          </SplitHeading>
+          <p className="lead" style={{ margin: "20px auto 32px" }}>
+            Your cart and addresses are saved to your account.
+          </p>
+          <button type="button" className="btn btn-orange" onClick={openLogin}>
+            Log in
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!user) return null;
 
   if (items.length === 0) {
     return (
@@ -49,21 +78,35 @@ export default function CheckoutPage() {
     );
   }
 
-  const shipping = subtotal >= 999 ? 0 : 79;
-  const total = subtotal + shipping;
-  const fmt = (n) => `₹${n.toLocaleString("en-IN")}`;
+  const pay = async () => {
+    if (!addressId) {
+      toast.error("Please select or add a delivery address.");
+      return;
+    }
+    setPaying(true);
+    let order;
+    try {
+      order = await createOrder(addressId);
+    } catch (e) {
+      toast.error(e.message);
+      setPaying(false);
+      return;
+    }
+    // the backend empties the cart when the order is created
+    useCartStore.setState({ items: [] });
 
-  const orderBody = items
-    .map((it) => `• ${it.product?.name || "Product"} × ${it.quantity} — ${fmt((it.product?.price || 0) * it.quantity)}`)
-    .join("%0D%0A");
-  const mailHref = `mailto:${contact.email}?subject=${encodeURIComponent(
-    "New order — Blessings by SEFD"
-  )}&body=${encodeURIComponent("Hi SEFD, please confirm this order:\n\n")}${orderBody}${encodeURIComponent(
-    `\n\nSubtotal: ${fmt(subtotal)}\nShipping: ${shipping === 0 ? "Free" : fmt(shipping)}\nTotal: ${fmt(total)}\n\n` +
-      `Name: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email}\n` +
-      `Address: ${form.address1} ${form.address2}, ${form.city}, ${form.state} - ${form.pincode}\n` +
-      `Notes: ${form.notes}`
-  )}`;
+    try {
+      const addr = (await getAddresses()).find((a) => a._id === addressId);
+      await payForOrder({
+        orderId: order._id,
+        prefill: { name: addr?.name, email: addr?.email, contact: addr?.phone },
+      });
+      toast.success("Payment successful — your order is confirmed!");
+    } catch (e) {
+      toast.error(`${e.message}. Your order is saved — you can pay from My Orders.`);
+    }
+    router.push("/account#orders");
+  };
 
   return (
     <section className="checkout section">
@@ -77,55 +120,9 @@ export default function CheckoutPage() {
             <div className="checkout-card">
               <h2>
                 <span className="step-no">1</span>
-                <User2 size={17} /> Contact details
-              </h2>
-              <div className="checkout-fields">
-                <div className="field">
-                  <label>Full name</label>
-                  <input value={form.name} onChange={set("name")} placeholder="Your name" />
-                </div>
-                <div className="field">
-                  <label>Phone</label>
-                  <input value={form.phone} onChange={set("phone")} placeholder="10-digit mobile number" />
-                </div>
-                <div className="field full">
-                  <label>Email</label>
-                  <input type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" />
-                </div>
-              </div>
-            </div>
-
-            <div className="checkout-card">
-              <h2>
-                <span className="step-no">2</span>
                 <MapPin size={17} /> Delivery address
               </h2>
-              <div className="checkout-fields">
-                <div className="field full">
-                  <label>Address line 1</label>
-                  <input value={form.address1} onChange={set("address1")} placeholder="Flat, house no., building" />
-                </div>
-                <div className="field full">
-                  <label>Address line 2</label>
-                  <input value={form.address2} onChange={set("address2")} placeholder="Area, street, landmark" />
-                </div>
-                <div className="field">
-                  <label>City</label>
-                  <input value={form.city} onChange={set("city")} placeholder="City" />
-                </div>
-                <div className="field">
-                  <label>State</label>
-                  <input value={form.state} onChange={set("state")} placeholder="State" />
-                </div>
-                <div className="field">
-                  <label>Pincode</label>
-                  <input value={form.pincode} onChange={set("pincode")} placeholder="400708" />
-                </div>
-                <div className="field full">
-                  <label>Order notes (optional)</label>
-                  <textarea rows={3} value={form.notes} onChange={set("notes")} placeholder="Gift wrap, delivery instructions…" />
-                </div>
-              </div>
+              <AddressManager selectable selectedId={addressId} onSelect={setAddressId} />
             </div>
           </div>
 
@@ -155,7 +152,7 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : fmt(shipping)}</span>
+                <span>{fmt(SHIPPING_FEE)}</span>
               </div>
               <div className="grand">
                 <span>Total</span>
@@ -163,13 +160,10 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <a href={mailHref} className="btn btn-tertiary">
-              Place order <ArrowUpRight size={16} />
-            </a>
-            <p className="checkout-note">
-              Online payment is on the way — placing an order sends your
-              details to SEFD by email for confirmation and delivery.
-            </p>
+            <button type="button" className="btn btn-tertiary" onClick={pay} disabled={paying}>
+              <CreditCard size={16} /> {paying ? "Please wait…" : `Pay ${fmt(total)}`}
+            </button>
+            <p className="checkout-note">Secure online payment via Razorpay (UPI, cards, net banking, wallets).</p>
           </aside>
         </div>
       </div>
