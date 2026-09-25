@@ -22,6 +22,9 @@ const rubik = Rubik({
 
 const SITE_URL = "https://enabling-disabled.org";
 
+// Navbar categories come from the live DB — don't freeze them at build time.
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {

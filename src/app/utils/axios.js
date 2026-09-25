@@ -24,7 +24,8 @@ export function setToken(token) {
   }
 }
 
-const api = axios.create({ baseURL: API_URL });
+// Timeout so a slow/asleep backend can't hang page renders indefinitely.
+const api = axios.create({ baseURL: API_URL, timeout: 15000 });
 
 // Attach the bearer token to every request when we're in the browser and
 // a token is stored. Public GET endpoints (category/product/productMedia)

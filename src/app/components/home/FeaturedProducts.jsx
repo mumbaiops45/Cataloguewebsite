@@ -3,11 +3,10 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../anim/Reveal";
 import AddToCartButton from "../cart/AddToCartButton";
-import { getCatalog } from "../../utils/catalog";
+import { getFeaturedProducts } from "../../utils/catalog";
 
 export default async function FeaturedProducts() {
-  const { products } = await getCatalog().catch(() => ({ products: [] }));
-  const featured = products.slice(0, 8);
+  const featured = await getFeaturedProducts(8).catch(() => []);
 
   if (featured.length === 0) return null;
 

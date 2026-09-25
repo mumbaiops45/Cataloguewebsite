@@ -7,6 +7,10 @@ import Impact from "./components/home/Impact";
 import FloatingActions from "./components/home/FloatingActions";
 import { getCategoryList } from "./utils/catalog";
 
+// Render per request so Featured products / categories reflect the live DB
+// instead of being frozen at build time.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const categories = await getCategoryList().catch(() => []);
 

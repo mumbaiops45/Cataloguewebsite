@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getCategories } from "../router/category.router";
 import { getProducts } from "../router/product.router";
 import { getProductMedia } from "../router/productMedia.router";
@@ -39,25 +40,37 @@ async function shapeProduct(p, categoryBySlugId) {
 
 // Lightweight — categories only (no product/media fetch). Used by the
 // Navbar, which just needs the name/slug/image for the menu.
-export async function getCategoryList() {
+// cache() dedupes calls within one server request (layout + page share it).
+export const getCategoryList = cache(async () => {
   const rawCategories = await getCategories();
   return rawCategories.filter((c) => c.isActive !== false).map(shapeCategory);
-}
+});
 
 // Fetches categories + products + (per product) primary media, and shapes
 // everything into the fields the storefront UI already expects
 // (slug, name, price, priceLabel, category, categorySlug, image, description).
-export async function getCatalog() {
-  const [rawCategories, rawProducts] = await Promise.all([getCategories(), getProducts()]);
-
-  const categories = rawCategories.filter((c) => c.isActive !== false).map(shapeCategory);
+export const getCatalog = cache(async () => {
+  const [categories, rawProducts] = await Promise.all([getCategoryList(), getProducts()]);
   const categoryById = new Map(categories.map((c) => [String(c.id), c]));
 
   const activeRawProducts = rawProducts.filter((p) => p.isActive !== false);
   const products = await Promise.all(activeRawProducts.map((p) => shapeProduct(p, categoryById)));
 
   return { categories, products };
-}
+});
+
+// Home page only shows a handful — fetch just those (and only their media)
+// instead of the whole catalog.
+export const getFeaturedProducts = cache(async (count = 8) => {
+  const [categories, rawProducts] = await Promise.all([
+    getCategoryList(),
+    getProducts({ limit: count * 2 }),
+  ]);
+  const categoryById = new Map(categories.map((c) => [String(c.id), c]));
+
+  const active = rawProducts.filter((p) => p.isActive !== false).slice(0, count);
+  return Promise.all(active.map((p) => shapeProduct(p, categoryById)));
+});
 
 export function getProductFromList(products, slug) {
   return products.find((p) => p.slug === slug);
