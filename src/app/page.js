@@ -5,14 +5,17 @@ import Collections from "./components/home/Collections";
 import MidBanner from "./components/home/MidBanner";
 import Impact from "./components/home/Impact";
 import FloatingActions from "./components/home/FloatingActions";
+import { getCategoryList } from "./utils/catalog";
 
-export default function Home() {
+export default async function Home() {
+  const categories = await getCategoryList().catch(() => []);
+
   return (
     <div className="homePage">
       <Hero />
       <Intro />
       <FeaturedProducts />
-      <Collections />
+      <Collections categories={categories} />
       <MidBanner />
       <Impact />
       <FloatingActions />

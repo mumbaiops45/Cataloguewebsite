@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowUpRight, MapPin, ShoppingBag, CreditCard } from "lucide-react";
+import { ArrowRight, ArrowUpRight, MapPin, ShoppingBag, CreditCard } from "lucide-react";
 import SplitHeading from "../components/anim/SplitHeading";
 import AddressManager from "../components/account/AddressManager";
 import { useCartStore } from "../store/cartStore";
@@ -29,6 +29,14 @@ export default function CheckoutPage() {
   const fetchCart = useCartStore((s) => s.fetchCart);
   const [addressId, setAddressId] = useState(null);
   const [paying, setPaying] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const [confirmed, setConfirmed] = useState(false);
+  const selectedAddress = addresses.find((a) => a._id === addressId);
+
+  const selectAddress = (id) => {
+    setAddressId(id);
+    setConfirmed(false);
+  };
 
   useEffect(() => {
     if (user && !hasFetched) fetchCart();
@@ -83,6 +91,8 @@ export default function CheckoutPage() {
       toast.error("Please select or add a delivery address.");
       return;
     }
+    // paying straight from the table counts as confirming the selected row
+    setConfirmed(true);
     setPaying(true);
     let order;
     try {
@@ -121,8 +131,38 @@ export default function CheckoutPage() {
               <h2>
                 <span className="step-no">1</span>
                 <MapPin size={17} /> Delivery address
+                {confirmed && (
+                  <button type="button" className="checkout-change" onClick={() => setConfirmed(false)}>
+                    Change
+                  </button>
+                )}
               </h2>
-              <AddressManager selectable selectedId={addressId} onSelect={setAddressId} />
+              {confirmed && selectedAddress && (
+                <p className="checkout-chosen">
+                  <b>{selectedAddress.name}</b>
+                  <br />
+                  {selectedAddress.address}
+                  {selectedAddress.landmark ? `, ${selectedAddress.landmark}` : ""}, {selectedAddress.city},{" "}
+                  {selectedAddress.state} - {selectedAddress.pincode}
+                  <br />
+                  {selectedAddress.phone}
+                </p>
+              )}
+              {/* stays mounted while collapsed so the selection survives "Change" */}
+              <div hidden={confirmed}>
+                <AddressManager
+                  layout="table"
+                  selectable
+                  selectedId={addressId}
+                  onSelect={selectAddress}
+                  onChange={setAddresses}
+                />
+                {selectedAddress && (
+                  <button type="button" className="btn btn-orange checkout-continue" onClick={() => setConfirmed(true)}>
+                    Deliver to this address <ArrowRight size={16} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -163,6 +203,7 @@ export default function CheckoutPage() {
             <button type="button" className="btn btn-tertiary" onClick={pay} disabled={paying}>
               <CreditCard size={16} /> {paying ? "Please wait…" : `Pay ${fmt(total)}`}
             </button>
+            {!addressId && <p className="checkout-note">Add a delivery address to continue.</p>}
             <p className="checkout-note">Secure online payment via Razorpay (UPI, cards, net banking, wallets).</p>
           </aside>
         </div>

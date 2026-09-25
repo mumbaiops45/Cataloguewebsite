@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, X } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import AddToCartButton from "../components/cart/AddToCartButton";
 
@@ -17,7 +17,7 @@ const SORTS = {
 
 const PAGE_SIZE = 12;
 
-export default function ShopBrowser({ initialCategories = [], initialProducts = [] }) {
+export default function ShopBrowser({ initialCategories = [], initialProducts = [], searchIds = null }) {
   const params = useSearchParams();
   const initial = params.get("category") || "all";
 
@@ -25,26 +25,33 @@ export default function ShopBrowser({ initialCategories = [], initialProducts = 
   const [products] = useState(initialProducts);
   const [cat, setCat] = useState(initial);
   const [sort, setSort] = useState("featured");
-  const [q, setQ] = useState(params.get("q") || "");
+  const q = params.get("q") || "";
   const [page, setPage] = useState(1);
 
   const pick = (next) => {
     setCat(next);
     setPage(1);
-    const url =
-      next === "all" ? "/shop" : `/shop?category=${next}`;
-    window.history.replaceState(null, "", url);
+    // keep the search query when switching category
+    const qs = new URLSearchParams();
+    if (next !== "all") qs.set("category", next);
+    if (q) qs.set("q", q);
+    const str = qs.toString();
+    window.history.replaceState(null, "", str ? `/shop?${str}` : "/shop");
   };
 
   const list = useMemo(() => {
+    // the server ran the keyword search against the backend; fall back to a
+    // local name match if it didn't (e.g. the search request failed)
+    const matchIds = q && searchIds ? new Set(searchIds) : null;
     const needle = q.trim().toLowerCase();
     const filtered = products.filter((p) => {
       if (cat !== "all" && p.categorySlug !== cat) return false;
+      if (matchIds) return matchIds.has(String(p.id));
       if (needle && !p.name.toLowerCase().includes(needle)) return false;
       return true;
     });
     return [...filtered].sort(SORTS[sort].fn);
-  }, [cat, sort, q, products]);
+  }, [cat, sort, q, searchIds, products]);
 
   const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -76,18 +83,6 @@ export default function ShopBrowser({ initialCategories = [], initialProducts = 
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => {
-                setQ(e.target.value);
-                setPage(1);
-              }}
-              placeholder="Search…"
-              aria-label="Search products"
-              className="sort-select"
-              style={{ minWidth: 160 }}
-            />
             <span className="shop-count">{list.length} items</span>
             <select
               className="sort-select"
@@ -109,7 +104,17 @@ export default function ShopBrowser({ initialCategories = [], initialProducts = 
       </div>
 
       <section className="wrap section-sm">
-        <Reveal className="product-grid" stagger scroll={false} y={20} key={cat + sort + currentPage}>
+        {q && (
+          <div className="shop-search-bar">
+            <span>
+              {list.length} result{list.length === 1 ? "" : "s"} for <b>“{q}”</b>
+            </span>
+            <Link href={cat === "all" ? "/shop" : `/shop?category=${cat}`} className="shop-search-clear">
+              <X size={14} /> Clear search
+            </Link>
+          </div>
+        )}
+        <Reveal className="product-grid" stagger scroll={false} y={20} key={q + cat + sort + currentPage}>
           {pageList.map((p, i) => (
             <article className="product-card" key={p.slug}>
               <div className="frame-wrap">
@@ -140,7 +145,9 @@ export default function ShopBrowser({ initialCategories = [], initialProducts = 
           ))}
 
           {list.length === 0 && (
-            <p className="shop-empty">Nothing here yet — try another category.</p>
+            <p className="shop-empty">
+              {q ? `No products match “${q}”. Try another word.` : "Nothing here yet — try another category."}
+            </p>
           )}
         </Reveal>
 

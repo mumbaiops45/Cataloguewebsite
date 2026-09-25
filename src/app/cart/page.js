@@ -8,7 +8,6 @@ import SplitHeading from "../components/anim/SplitHeading";
 import { useCartStore } from "../store/cartStore";
 import { useAuth } from "../components/auth/AuthContext";
 import { useLoginModal } from "../components/auth/LoginModalContext";
-import { contact } from "../lib/site";
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
@@ -81,15 +80,6 @@ export default function CartPage() {
 
   const subtotalLabel = `₹${subtotal.toLocaleString("en-IN")}`;
 
-  const orderBody = rows
-    .map((it) => `• ${it.product?.name || "Product"} × ${it.quantity} — ₹${(it.quantity * (it.product?.price || 0)).toLocaleString("en-IN")}`)
-    .join("%0D%0A");
-  const mailHref = `mailto:${contact.email}?subject=${encodeURIComponent(
-    "Order enquiry — Blessings by SEFD"
-  )}&body=${encodeURIComponent("Hi SEFD, I'd like to order:\n\n")}${orderBody}${encodeURIComponent(
-    `\n\nSubtotal: ${subtotalLabel}\n\nName:\nDelivery address:\nPhone:`
-  )}`;
-
   return (
     <section className="section top-offset-lg">
       <div className="wrap">
@@ -102,7 +92,8 @@ export default function CartPage() {
           </button>
         </div>
 
-        <div className="cart-list" style={{ marginTop: 24 }}>
+        <div className="cart-layout">
+        <div className="cart-list">
           {rows.map((it) => (
             <div className="cart-row" key={it.productId}>
               <div className="cart-row-media">
@@ -151,15 +142,13 @@ export default function CartPage() {
             <b>{subtotalLabel}</b>
           </div>
           <p>
-            Review your address and place the order, or send it to SEFD by
-            email and we&apos;ll confirm stock, delivery and payment.
+            Shipping is added at checkout. Pay securely online via UPI, cards,
+            net banking or wallets.
           </p>
           <Link href="/checkout" className="btn btn-tertiary">
             Proceed to checkout <ArrowUpRight size={16} />
           </Link>
-          <a href={mailHref} className="btn btn-ghost" style={{ marginTop: 10 }}>
-            Send order enquiry by email
-          </a>
+        </div>
         </div>
       </div>
     </section>

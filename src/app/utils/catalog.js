@@ -10,6 +10,7 @@ function shapeCategory(c) {
     slug: c.slug,
     name: c.name,
     image: c.image || "",
+    description: c.description || "",
   };
 }
 

@@ -6,7 +6,9 @@ import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import SplitHeading from "../anim/SplitHeading";
 
-const cards = [
+// hand-written copy/images for the original collections; used to dress up
+// matching backend categories, and as the whole list if the API is down
+const fallbackCards = [
   {
     name: "Warli Art",
     href: "/shop?category=warli-art",
@@ -44,9 +46,28 @@ const cards = [
   },
 ];
 
-export default function Collections() {
+const NUMBER_WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"];
+
+const fallbackBySlug = new Map(
+  fallbackCards.map((c) => [new URLSearchParams(c.href.split("?")[1]).get("category"), c])
+);
+
+function toCard(cat) {
+  const known = fallbackBySlug.get(cat.slug);
+  return {
+    name: cat.name,
+    href: `/shop?category=${encodeURIComponent(cat.slug)}`,
+    tag: known?.tag || "Handmade collection",
+    copy: cat.description || known?.copy || `Explore handmade ${cat.name.toLowerCase()} by our artisans.`,
+    img: cat.image || known?.img || "/file.svg",
+  };
+}
+
+export default function Collections({ categories = [] }) {
   const [active, setActive] = useState(0);
-  const current = cards[active];
+  const cards = categories.length > 0 ? categories.map(toCard) : fallbackCards;
+  const current = cards[Math.min(active, cards.length - 1)];
+  const countWord = NUMBER_WORDS[cards.length] || String(cards.length);
 
   return (
     <section className="collections section" id="collections">
@@ -54,7 +75,7 @@ export default function Collections() {
         <div>
           <p className="eyebrow">The range</p>
           <SplitHeading as="h2" scroll className="display-2">
-            Five collections,
+            {countWord} collection{cards.length === 1 ? "" : "s"},
             <br />
             <em>one purpose.</em>
           </SplitHeading>

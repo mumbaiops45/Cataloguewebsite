@@ -134,9 +134,6 @@ export default function Hero() {
       <div className="hero-scrim" />
 
       <div className="wrap hero-inner">
-        <p className="eyebrow hero-eyebrow" style={{ color: "var(--orange-soft)" }}>
-          Blessings by SEFD
-        </p>
 
         <h1 className="hero-h1">
           <span className="hero-line">Handmade by hands the world</span>

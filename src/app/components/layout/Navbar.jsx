@@ -33,7 +33,11 @@ export default function Navbar({ categories = [] }) {
   const submitSearch = (e) => {
     e.preventDefault();
     const q = query.trim();
-    if (!q) return;
+    if (!q) {
+      e.currentTarget.querySelector("input")?.focus();
+      return;
+    }
+    setOpen(false);
     router.push(`/shop?q=${encodeURIComponent(q)}`);
   };
 
@@ -104,7 +108,9 @@ export default function Navbar({ categories = [] }) {
           </Link>
 
           <form className="nav-search desktop-only" onSubmit={submitSearch} role="search">
-            <Search size={16} />
+            <button type="submit" className="search-submit" aria-label="Search">
+              <Search size={16} />
+            </button>
             <input
               type="text"
               value={query}
@@ -203,7 +209,9 @@ export default function Navbar({ categories = [] }) {
       <div className={`mobile-panel ${open ? "open" : ""}`}>
         <div className="mobile-links">
           <form className="mobile-search" onSubmit={submitSearch} role="search">
-            <Search size={17} />
+            <button type="submit" className="search-submit" aria-label="Search">
+              <Search size={17} />
+            </button>
             <input
               type="text"
               value={query}

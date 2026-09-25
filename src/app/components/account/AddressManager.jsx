@@ -30,7 +30,7 @@ function validate(f) {
   return "";
 }
 
-export default function AddressManager({ selectable = false, selectedId = null, onSelect }) {
+export default function AddressManager({ selectable = false, selectedId = null, onSelect, onChange, layout = "grid" }) {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // null | "new" | address._id
@@ -51,6 +51,7 @@ export default function AddressManager({ selectable = false, selectedId = null, 
   const refresh = async (preferId) => {
     const list = await getAddresses();
     setAddresses(list);
+    onChange?.(list);
     pickDefault(list, preferId);
     return list;
   };
@@ -61,6 +62,7 @@ export default function AddressManager({ selectable = false, selectedId = null, 
       .then((list) => {
         if (cancelled) return;
         setAddresses(list);
+        onChange?.(list);
         if (selectable && onSelect) {
           const next = list.find((a) => a.isDefault) || list[0];
           onSelect(next ? next._id : null);
@@ -153,7 +155,81 @@ export default function AddressManager({ selectable = false, selectedId = null, 
 
   return (
     <div className="addr">
-      {addresses.length > 0 && (
+      {addresses.length > 0 && layout === "table" && (
+        <div className="addr-table-wrap">
+          <table className="addr-table">
+            <thead>
+              <tr>
+                {selectable && <th aria-label="Select" />}
+                <th>Name</th>
+                <th>Address</th>
+                <th>Contact</th>
+                <th aria-label="Actions" />
+              </tr>
+            </thead>
+            <tbody>
+              {addresses.map((a) => {
+                const active = selectable && selectedId === a._id;
+                return (
+                  <tr
+                    key={a._id}
+                    className={`${active ? "is-selected" : ""} ${selectable ? "is-selectable" : ""}`}
+                    onClick={selectable ? () => onSelect?.(a._id) : undefined}
+                  >
+                    {selectable && (
+                      <td className="addr-table-radio">
+                        <input
+                          type="radio"
+                          name="delivery-address"
+                          checked={active}
+                          onChange={() => onSelect?.(a._id)}
+                          aria-label={`Deliver to ${a.name}`}
+                        />
+                      </td>
+                    )}
+                    <td className="addr-table-name">
+                      <b>{a.name}</b>
+                      {a.isDefault && <span className="addr-badge">Default</span>}
+                    </td>
+                    <td>
+                      {a.address}
+                      {a.landmark ? `, ${a.landmark}` : ""}
+                      <br />
+                      {a.city}, {a.state} - {a.pincode}, {a.country}
+                    </td>
+                    <td>
+                      {a.phone}
+                      {a.email && (
+                        <>
+                          <br />
+                          {a.email}
+                        </>
+                      )}
+                    </td>
+                    <td className="addr-table-actions" onClick={(e) => e.stopPropagation()}>
+                      <div className="addr-actions">
+                        <button type="button" onClick={() => startEdit(a)}>
+                          <Pencil size={13} /> Edit
+                        </button>
+                        <button type="button" onClick={() => remove(a)}>
+                          <Trash2 size={13} /> Delete
+                        </button>
+                        {!a.isDefault && (
+                          <button type="button" onClick={() => makeDefault(a)}>
+                            Make default
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {addresses.length > 0 && layout !== "table" && (
         <div className="addr-list">
           {addresses.map((a) => {
             const active = selectable && selectedId === a._id;

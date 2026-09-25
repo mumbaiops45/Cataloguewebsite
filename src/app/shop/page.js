@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import SplitHeading from "../components/anim/SplitHeading";
 import ShopBrowser from "./ShopBrowser";
 import { getCatalog } from "../utils/catalog";
+import { getProducts } from "../router/product.router";
 
 export const metadata = {
   title: "Shop",
@@ -11,26 +12,31 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function ShopPage() {
-  const { categories, products } = await getCatalog().catch(() => ({ categories: [], products: [] }));
+export default async function ShopPage({ searchParams }) {
+  const { q } = await searchParams;
+  const keyword = typeof q === "string" ? q.trim() : "";
+
+  const [{ categories, products }, matches] = await Promise.all([
+    getCatalog().catch(() => ({ categories: [], products: [] })),
+    // the backend matches names with a case-insensitive regex; null = no search
+    keyword ? getProducts({ keyword }).catch(() => []) : null,
+  ]);
+  const searchIds = matches ? matches.map((p) => String(p._id)) : null;
 
   return (
     <div className="shop-page">
       <header className="page-head">
         <div className="wrap">
-          <p className="eyebrow">The collection · {products.length} products</p>
+      
           <SplitHeading as="h1">
             Shop with <em>purpose.</em>
           </SplitHeading>
-          <p>
-            Handmade in Navi Mumbai from recycled sarees, jute and wood. Choose a
-            category, pick a piece, and put a wage in an artisan&apos;s hands.
-          </p>
+         
         </div>
       </header>
 
       <Suspense fallback={<div className="wrap section-sm">Loading products…</div>}>
-        <ShopBrowser initialCategories={categories} initialProducts={products} />
+        <ShopBrowser initialCategories={categories} initialProducts={products} searchIds={searchIds} />
       </Suspense>
     </div>
   );

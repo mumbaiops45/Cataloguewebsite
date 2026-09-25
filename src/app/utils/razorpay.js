@@ -14,7 +14,7 @@ function loadScript() {
 // Opens Razorpay for an existing PENDING_PAYMENT order. Resolves once the
 // payment is verified by the backend, rejects on failure or dismissal.
 export async function payForOrder({ orderId, prefill }) {
-  const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_T1t8LJqvrGtAwC";
   if (!key) throw new Error("Payments aren't configured yet (missing Razorpay key).");
   if (!(await loadScript())) throw new Error("Couldn't load Razorpay. Check your connection.");
 
