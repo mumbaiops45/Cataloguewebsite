@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, Package } from "lucide-react";
+import { ChevronDown, CreditCard, Eye, EyeOff, Package, XCircle } from "lucide-react";
 import { cancelOrder, getOrders } from "../../router/order.router";
 import { payForOrder } from "../../utils/razorpay";
 import { toast } from "../../store/toastStore";
@@ -182,17 +182,17 @@ export default function OrdersList() {
                     onClick={() => setOpenId(isOpen ? null : o._id)}
                     aria-expanded={isOpen}
                   >
-                    <td className="otable-id">{o._id}</td>
-                    <td>{fmtDate(o.createdAt)}</td>
-                    <td>{qty}</td>
-                    <td className="otable-total">{fmt(o.total)}</td>
-                    <td>
+                    <td className="otable-id" data-label="Order ID">{o._id}</td>
+                    <td data-label="Date">{fmtDate(o.createdAt)}</td>
+                    <td data-label="Items">{qty}</td>
+                    <td className="otable-total" data-label="Total">{fmt(o.total)}</td>
+                    <td data-label="Status">
                       <span className={`order-tag st-${o.status}`}>{label(o.status)}</span>
                     </td>
-                    <td>
+                    <td data-label="Payment">
                       <span className={`order-tag pay-${o.paymentStatus}`}>{label(o.paymentStatus)}</span>
                     </td>
-                    <td onClick={(e) => e.stopPropagation()}>
+                    <td className="otable-action" data-label="Action" onClick={(e) => e.stopPropagation()}>
                       {o.status === "PENDING_PAYMENT" && o.paymentStatus === "UNPAID" ? (
                         <button
                           type="button"
@@ -200,13 +200,15 @@ export default function OrdersList() {
                           disabled={busy === o._id}
                           onClick={() => pay(o)}
                         >
-                          {busy === o._id ? "Wait…" : `Pay ${fmt(o.total)}`}
+                          <CreditCard size={14} /> {busy === o._id ? "Wait…" : `Pay ${fmt(o.total)}`}
                         </button>
                       ) : (
                         <span className="otable-dash">—</span>
                       )}
                     </td>
-                    <td className="otable-chev">
+                    <td className="otable-chev" aria-hidden="true">
+                      {isOpen ? <EyeOff size={15} className="otable-chev-eye" /> : <Eye size={15} className="otable-chev-eye" />}
+                      <span className="otable-chev-text">{isOpen ? "Hide details" : "View details"}</span>
                       <ChevronDown size={16} />
                     </td>
                   </tr>
@@ -274,7 +276,7 @@ export default function OrdersList() {
                                   disabled={busy === o._id}
                                   onClick={() => pay(o)}
                                 >
-                                  {busy === o._id ? "Please wait…" : "Pay now"}
+                                  <CreditCard size={14} /> {busy === o._id ? "Please wait…" : "Pay now"}
                                 </button>
                               )}
                               <button
@@ -283,7 +285,7 @@ export default function OrdersList() {
                                 disabled={busy === o._id}
                                 onClick={() => cancel(o)}
                               >
-                                Cancel order
+                                <XCircle size={14} /> Cancel order
                               </button>
                             </div>
                           )}

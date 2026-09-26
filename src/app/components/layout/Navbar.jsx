@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ShoppingBag, ArrowUpRight, User, Search, ChevronDown, Tag } from "lucide-react";
+import { Menu, X, ShoppingBag, User, Search, ChevronDown, ChevronRight, Tag } from "lucide-react";
 import { nav } from "../../lib/site";
 import { useCartStore, selectCartCount } from "../../store/cartStore";
+import { useShippingStore } from "../../store/shippingStore";
+import AnnounceBar from "./AnnounceBar";
 import { useAuth } from "../auth/AuthContext";
 import { useLoginModal } from "../auth/LoginModalContext";
 import { useAccountDrawer } from "../auth/AccountDrawerContext";
@@ -18,6 +20,8 @@ export default function Navbar({ categories = [] }) {
   const openCartDrawer = useCartStore((s) => s.openDrawer);
   const fetchCart = useCartStore((s) => s.fetchCart);
   const resetCart = useCartStore((s) => s.reset);
+  const fetchShipping = useShippingStore((s) => s.fetchRates);
+  const resetShipping = useShippingStore((s) => s.reset);
   const { user } = useAuth();
   const { open: openLogin } = useLoginModal();
   const { open: openAccount } = useAccountDrawer();
@@ -53,9 +57,14 @@ export default function Navbar({ categories = [] }) {
     setCatOpen(false);
   }, [pathname]);
   useEffect(() => {
-    if (user) fetchCart();
-    else resetCart();
-  }, [user, fetchCart, resetCart]);
+    if (user) {
+      fetchCart();
+      fetchShipping();
+    } else {
+      resetCart();
+      resetShipping();
+    }
+  }, [user, fetchCart, resetCart, fetchShipping, resetShipping]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -82,16 +91,7 @@ export default function Navbar({ categories = [] }) {
   return (
     <>
       <header className={`nav ${scrolled ? "scrolled" : ""}`}>
-        <div className="announce">
-          <div className="wrap announce-inner">
-            <span>
-              <b>Beyond charity</b> — a life with self esteem &amp; dignity
-            </span>
-            <Link href="/shop" className="desktop-only">
-              Shop the range <ArrowUpRight size={13} />
-            </Link>
-          </div>
-        </div>
+        <AnnounceBar />
 
         <div className="wrap nav-bar">
           <Link href="/" className="brand" aria-label="Blessings by SEFD — home">
@@ -220,26 +220,41 @@ export default function Navbar({ categories = [] }) {
               aria-label="Search products"
             />
           </form>
-          <Link href="/" className={pathname === "/" ? "active" : ""}>
-            Home
-          </Link>
-          <div className="mobile-cat-label">Shop by category</div>
-          <div className="mobile-cat-row">
-            {categories.map((c) => (
-              <Link key={c.slug} href={`/shop?category=${c.slug}`} className="mobile-cat-chip">
-                {c.name}
+          {categories.length > 0 && (
+            <>
+              <div className="mobile-cat-label">Shop by category</div>
+              <div className="mobile-cat-grid">
+                {categories.map((c) => (
+                  <Link key={c.slug} href={`/shop?category=${c.slug}`} className="mobile-cat-card" onClick={() => setOpen(false)}>
+                    <span className="mobile-cat-thumb">
+                      {c.image ? (
+                        <Image src={c.image} alt="" fill sizes="34px" style={{ objectFit: "cover" }} />
+                      ) : (
+                        <Tag size={15} />
+                      )}
+                    </span>
+                    <span className="mobile-cat-name">{c.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="mobile-cat-label">Menu</div>
+          <nav className="mobile-nav">
+            {[{ name: "Home", href: "/" }, ...nav].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={isActive(item.href) ? "active" : ""}
+                onClick={() => setOpen(false)}
+              >
+                {item.name}
+                <ChevronRight size={16} />
               </Link>
             ))}
-          </div>
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={isActive(item.href) ? "active" : ""}
-            >
-              {item.name}
-            </Link>
-          ))}
+          </nav>
+
           <button
             type="button"
             className="mobile-login-btn"
@@ -249,6 +264,7 @@ export default function Navbar({ categories = [] }) {
               else openLogin();
             }}
           >
+            <User size={16} />
             {user ? `My account (${user.name?.split(" ")[0] || "account"})` : "Log in"}
           </button>
         </div>

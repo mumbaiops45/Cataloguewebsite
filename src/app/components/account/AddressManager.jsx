@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { Check, MapPin, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { createAddress, deleteAddress, getAddresses, updateAddress } from "../../router/address.router";
 import { toast } from "../../store/toastStore";
 
@@ -191,13 +191,13 @@ export default function AddressManager({ selectable = false, selectedId = null, 
                       <b>{a.name}</b>
                       {a.isDefault && <span className="addr-badge">Default</span>}
                     </td>
-                    <td>
+                    <td className="addr-table-addr">
                       {a.address}
                       {a.landmark ? `, ${a.landmark}` : ""}
                       <br />
                       {a.city}, {a.state} - {a.pincode}, {a.country}
                     </td>
-                    <td>
+                    <td className="addr-table-contact">
                       {a.phone}
                       {a.email && (
                         <>
@@ -216,7 +216,7 @@ export default function AddressManager({ selectable = false, selectedId = null, 
                         </button>
                         {!a.isDefault && (
                           <button type="button" onClick={() => makeDefault(a)}>
-                            Make default
+                            <Star size={13} /> Make default
                           </button>
                         )}
                       </div>
@@ -268,7 +268,7 @@ export default function AddressManager({ selectable = false, selectedId = null, 
                   </button>
                   {!a.isDefault && (
                     <button type="button" onClick={() => makeDefault(a)}>
-                      Make default
+                      <Star size={13} /> Make default
                     </button>
                   )}
                 </div>
@@ -334,11 +334,11 @@ export default function AddressManager({ selectable = false, selectedId = null, 
           )}
           <div className="addr-form-actions">
             <button type="submit" className="btn btn-orange btn-sm" disabled={saving}>
-              {saving ? "Saving…" : "Save address"}
+              <Check size={14} /> {saving ? "Saving…" : "Save address"}
             </button>
             {addresses.length > 0 && (
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => setEditing(null)}>
-                Cancel
+                <X size={14} /> Cancel
               </button>
             )}
           </div>

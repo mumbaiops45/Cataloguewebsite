@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, MapPin, ShoppingBag, CreditCard } from "lucide-react";
+import { ArrowRight, ArrowUpRight, MapPin, ShoppingBag, CreditCard, Truck } from "lucide-react";
 import SplitHeading from "../components/anim/SplitHeading";
 import AddressManager from "../components/account/AddressManager";
 import { useCartStore } from "../store/cartStore";
@@ -14,9 +14,8 @@ import { createOrder } from "../router/order.router";
 import { getAddresses } from "../router/address.router";
 import { payForOrder } from "../utils/razorpay";
 import { toast } from "../store/toastStore";
+import { useShippingStore, findShippingRate } from "../store/shippingStore";
 
-// matches the flat shipping fee the backend applies to every order
-const SHIPPING_FEE = 60;
 const fmt = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
 export default function CheckoutPage() {
@@ -27,6 +26,9 @@ export default function CheckoutPage() {
   const catalogMap = useCartStore((s) => s.catalogMap);
   const hasFetched = useCartStore((s) => s.hasFetched);
   const fetchCart = useCartStore((s) => s.fetchCart);
+  const shippingRates = useShippingStore((s) => s.rates);
+  const shippingLoaded = useShippingStore((s) => s.loaded);
+  const fetchShipping = useShippingStore((s) => s.fetchRates);
   const [addressId, setAddressId] = useState(null);
   const [paying, setPaying] = useState(false);
   const [addresses, setAddresses] = useState([]);
@@ -40,11 +42,18 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (user && !hasFetched) fetchCart();
-  }, [user, hasFetched, fetchCart]);
+    if (user) fetchShipping();
+  }, [user, hasFetched, fetchCart, fetchShipping]);
 
   const items = rawItems.map((it) => ({ ...it, product: catalogMap.get(it.productId) }));
   const subtotal = items.reduce((n, it) => n + it.quantity * (it.product?.price || 0), 0);
-  const total = subtotal + SHIPPING_FEE;
+  const shippingRate = findShippingRate(subtotal, shippingRates);
+  const shippingFee = shippingRate?.shippingFee ?? 0;
+  const total = subtotal + shippingFee;
+  // the next slab with a lower fee, to nudge "add ₹X more"
+  const cheaperRate = shippingRate
+    ? shippingRates.find((r) => r.minOrderValue > subtotal && r.shippingFee < shippingRate.shippingFee)
+    : null;
 
   if (ready && !user) {
     return (
@@ -191,8 +200,13 @@ export default function CheckoutPage() {
                 <span>{fmt(subtotal)}</span>
               </div>
               <div>
-                <span>Shipping</span>
-                <span>{fmt(SHIPPING_FEE)}</span>
+                <span>
+                  Shipping
+                  {shippingRate?.name && <small className="checkout-ship-name">{shippingRate.name}</small>}
+                </span>
+                <span className={shippingRate && shippingFee === 0 ? "checkout-free" : ""}>
+                  {!shippingLoaded ? "Calculating…" : !shippingRate ? "—" : shippingFee === 0 ? "Free" : fmt(shippingFee)}
+                </span>
               </div>
               <div className="grand">
                 <span>Total</span>
@@ -200,9 +214,27 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <button type="button" className="btn btn-tertiary" onClick={pay} disabled={paying}>
+            {cheaperRate && (
+              <p className="checkout-ship-tip">
+                <Truck size={15} />
+                <span>
+                  Add <b>{fmt(cheaperRate.minOrderValue - subtotal)}</b> more to get{" "}
+                  {cheaperRate.shippingFee === 0 ? "free shipping" : `shipping at ${fmt(cheaperRate.shippingFee)}`}.
+                </span>
+              </p>
+            )}
+
+            <button
+              type="button"
+              className="btn btn-tertiary"
+              onClick={pay}
+              disabled={paying || !shippingLoaded || !shippingRate}
+            >
               <CreditCard size={16} /> {paying ? "Please wait…" : `Pay ${fmt(total)}`}
             </button>
+            {shippingLoaded && !shippingRate && (
+              <p className="checkout-note">Shipping isn’t available for this order value yet. Please contact us.</p>
+            )}
             {!addressId && <p className="checkout-note">Add a delivery address to continue.</p>}
             <p className="checkout-note">Secure online payment via Razorpay (UPI, cards, net banking, wallets).</p>
           </aside>
