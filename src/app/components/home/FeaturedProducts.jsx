@@ -6,7 +6,7 @@ import AddToCartButton from "../cart/AddToCartButton";
 import { getFeaturedProducts } from "../../utils/catalog";
 
 export default async function FeaturedProducts() {
-  const featured = await getFeaturedProducts(8).catch(() => []);
+  const featured = await getFeaturedProducts(10).catch(() => []);
 
   if (featured.length === 0) return null;
 

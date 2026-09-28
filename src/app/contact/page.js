@@ -33,11 +33,7 @@ export default function ContactPage() {
             <div className="contact-lines" style={{ marginTop: 20 }}>
               <a href={contact.phoneHref}>
                 <Phone size={17} />
-                <span>
-                  {contact.phone}
-                  <br />
-                  {contact.phoneAlt} · {contact.landline}
-                </span>
+                {contact.phone}
               </a>
               <a href={contact.emailHref}>
                 <Mail size={17} />
@@ -45,7 +41,7 @@ export default function ContactPage() {
               </a>
               <a href={contact.website} target="_blank" rel="noopener noreferrer">
                 <Globe size={17} />
-                enabling-disabled.org
+                {contact.website}/
               </a>
               <p>
                 <MapPin size={17} />

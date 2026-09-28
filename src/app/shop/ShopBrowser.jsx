@@ -15,7 +15,7 @@ const SORTS = {
   name: { label: "A – Z", fn: (a, b) => a.name.localeCompare(b.name) },
 };
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 15; // 3 full rows of 5
 
 export default function ShopBrowser({ initialCategories = [], initialProducts = [], searchIds = null }) {
   const params = useSearchParams();

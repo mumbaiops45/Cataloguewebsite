@@ -4,23 +4,30 @@ import FeaturedProducts from "./components/home/FeaturedProducts";
 import Collections from "./components/home/Collections";
 import MidBanner from "./components/home/MidBanner";
 import Impact from "./components/home/Impact";
+import InfoStrip from "./components/home/InfoStrip";
 import FloatingActions from "./components/home/FloatingActions";
 import { getCategoryList } from "./utils/catalog";
+import { getBanners, splitBanners } from "./router/banner.router";
 
 // Render per request so Featured products / categories reflect the live DB
 // instead of being frozen at build time.
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const categories = await getCategoryList().catch(() => []);
+  const [categories, banners] = await Promise.all([
+    getCategoryList().catch(() => []),
+    getBanners().catch(() => []),
+  ]);
+  const { hero, middle } = splitBanners(banners);
 
   return (
     <div className="homePage">
-      <Hero />
+      <Hero banners={hero} />
       <Intro />
       <FeaturedProducts />
       <Collections categories={categories} />
-      <MidBanner />
+      <MidBanner banners={middle} />
+      <InfoStrip />
       <Impact />
       <FloatingActions />
     </div >

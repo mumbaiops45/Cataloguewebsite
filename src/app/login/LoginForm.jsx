@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
+import { contact } from "../lib/site";
 import { useAuth } from "../components/auth/AuthContext";
 import { useLoginModal } from "../components/auth/LoginModalContext";
 
@@ -162,7 +163,7 @@ export default function LoginForm() {
               <input type="checkbox" name="remember" />
               Remember me
             </label>
-            <a href="mailto:selfesteem.disabled@gmail.com?subject=Password%20help">
+            <a href={`${contact.emailHref}?subject=Password%20help`}>
               Forgot password?
             </a>
           </div>

@@ -7,17 +7,20 @@ export const contact = {
   website: "https://enabling-disabled.org",
   landline: "022-27795994 / 27795995",
   address:
-    "Gods' Abode, Plot No 23A, Near Abhyudaya Bank, Sector 17, Airoli, Navi Mumbai — 400708",
+    "Gods' Abode, Plot No 23A, Near Abhyudaya Bank, Sector 17, Airoli, Navi Mumbai - 400708.",
 };
 
 export const nav = [
   { name: "Shop", href: "/shop" },
   { name: "Ishwari", href: "/ishwari" },
-  { name: "Our Story", href: "/about" },
-  { name: "Our Work", href: "/our-work" },
-  { name: "Events", href: "/events" },
-  { name: "Awards", href: "/awards" },
+  { name: "About", href: "/about" },
+  { name: "Workshops", href: "/workshops" },
+  { name: "Sanyukta", href: "/sanyukta" },
+  { name: "FOG", href: "/fog" },
+  { name: "GODS Champs", href: "/gods-champs" },
   { name: "Impact", href: "/impact" },
+  { name: "Awards", href: "/awards" },
+  { name: "Blessings", href: "/blessings" },
 ];
 
 export const collectionsMenu = [
@@ -315,38 +318,6 @@ export const ishwariImages = [
   "/products/cotton/page-09-05.png",
   "/products/cotton/page-09-03.png",
 ];
-
-// Ishwari catalogue — the actual product photography, one per price-list
-// item. Used for both the homepage teaser and the full /ishwari shop grid.
-export const ishwariCatalogue = [
-  { name: "Mango Leaf Toran", price: 200, img: "/products/catalogue/mangoleaf.png", featured: true },
-  { name: "Gudhi Vastra", price: 400, img: "/products/catalogue/gudi.png", featured: true },
-  { name: "Gudhi Vastra — Design 2", price: 400, img: "/products/catalogue/gudi1.png" },
-  { name: "Toran", price: 350, img: "/products/catalogue/toran.png" },
-  { name: "Naivedya Paan", price: 299, img: "/products/catalogue/naivedyapaan.png" },
-  { name: "Samai Stand Cover", price: 195, img: "/products/catalogue/samaistand.png" },
-  { name: "Mini Gudhi", price: 200, img: "/products/catalogue/minigudhi.png" },
-  { name: "Chaurang Cover", price: 450, img: "/products/catalogue/chaurangcover.png", featured: true },
-  { name: "Cushion Cover", price: 200, img: "/products/catalogue/cushioncover.png" },
-  { name: "Book Cover", price: 150, img: "/products/catalogue/bookcover.png" },
-  { name: "Knot Bag", price: 150, img: "/products/catalogue/knotbag.png" },
-  { name: "Money Purse — Big", price: 240, img: "/products/catalogue/moneypurse.png", featured: true },
-  { name: "Money Purse — Small", price: 180, img: "/products/catalogue/moneypurse1.png" },
-  { name: "Cloth Bag", price: 150, img: "/products/catalogue/clothbag.png" },
-  { name: "Shoulder Bag", price: 220, img: "/products/catalogue/shoulderbag.png", featured: true },
-  { name: "Single Saree Cover", price: 250, img: "/products/catalogue/singlesareecover.png", featured: true },
-  { name: "Quilted Bag", price: 350, img: "/products/catalogue/quiltedbag.png", featured: true },
-  { name: "Table Matte", price: 150, img: "/products/catalogue/tablematte.png" },
-  { name: "Table Runner + 4 Mattes", price: 1025, img: "/products/catalogue/tablerunnerwith4mattes.png", featured: true },
-].map((p) => ({
-  ...p,
-  slug: p.name
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, ""),
-  priceLabel: `₹${p.price.toLocaleString("en-IN")}`,
-}));
 
 // Intro copy for the Ishwari product catalogue — matches the printed
 // catalogue sheet (About SEFD + the Ishwari brand statement).

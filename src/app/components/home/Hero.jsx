@@ -1,44 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
-import { ArrowUpRight } from "lucide-react";
 import { gsap, prefersReducedMotion } from "../anim/gsap";
+import BannerTitle, { BannerCount, BannerCta } from "./BannerTitle";
+import useBanners from "./useBanners";
 
-const SLIDES = [
-  {
-    src: "/homepage/homepage1.jpg",
-    alt: "An artist at an SEFD exhibition painting a canvas with their foot",
-  },
-  {
-    src: "/homepage/homepage4.jpg",
-    alt: "Beneficiaries decorating festival lamps together in the SEFD workshop",
-  },
-  {
-    src: "/homepage/homepage2.jpg",
-    alt: "A young artist painting at a public SEFD workshop",
-  },
-];
-
-const WORDS = ["overlooked.", "underestimated.", "counted out.", "passed over."];
-
-export default function Hero() {
+// Hero slider — fully driven by `Hero` banners from the backend.
+export default function Hero({ banners: initial = [] }) {
+  const banners = useBanners(initial, "hero");
   const root = useRef(null);
-  const word = useRef(null);
+  const [current, setCurrent] = useState(0);
+  const total = banners.length;
 
   useGSAP(
     () => {
+      if (!total) return;
       const el = root.current;
-      const slides = gsap.utils.toArray(".hero-slide", el);
-      const imgs = gsap.utils.toArray(".hero-slide img", el);
+      const slideEls = gsap.utils.toArray(".hero-slide", el);
+      const imgs = gsap.utils.toArray(".hero-slide .banner-img", el);
       const dots = gsap.utils.toArray(".hero-dot", el);
       const reduce = prefersReducedMotion();
 
       let idx = 0;
+      let timer = null;
+
       const show = (n) => {
-        slides.forEach((s, i) => {
+        slideEls.forEach((s, i) => {
           gsap.to(s, {
             autoAlpha: i === n ? 1 : 0,
             duration: reduce ? 0 : 1.4,
@@ -46,84 +35,53 @@ export default function Hero() {
           });
           dots[i]?.classList.toggle("active", i === n);
         });
-        if (!reduce) {
-          gsap.fromTo(
-            imgs[n],
-            { scale: 1.14 },
-            { scale: 1, duration: 7, ease: "none" }
-          );
+        if (!reduce && imgs[n]) {
+          gsap.fromTo(imgs[n], { scale: 1.14 }, { scale: 1, duration: 7, ease: "none" });
         }
         idx = n;
+        setCurrent(n);
       };
-      show(0);
 
-      let w = 0;
-      const swapWord = () => {
-        w = (w + 1) % WORDS.length;
-        if (reduce) {
-          word.current.textContent = WORDS[w];
-          return;
+      // Auto-scroll only when there's more than one banner.
+      const restart = () => {
+        clearInterval(timer);
+        if (slideEls.length > 1) {
+          timer = setInterval(() => show((idx + 1) % slideEls.length), 6000);
         }
-        gsap
-          .timeline()
-          .to(word.current, {
-            autoAlpha: 0,
-            y: -8,
-            duration: 0.32,
-            ease: "power1.in",
-          })
-          .add(() => {
-            word.current.textContent = WORDS[w];
-          })
-          .set(word.current, { y: 8 })
-          .to(word.current, {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.42,
-            ease: "power2.out",
-          });
       };
 
-      if (!reduce) {
-        gsap.from(
-          el.querySelectorAll(
-            ".hero-eyebrow, .hero-line, .hero-sub, .hero-cta, .hero-meta > div, .hero-dots, .hero-scroll"
-          ),
-          {
-            autoAlpha: 0,
-            y: 26,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.07,
-            delay: 0.25,
-          }
-        );
-      }
+      show(0);
+      restart();
 
-      dots.forEach((d, i) => d.addEventListener("click", () => show(i)));
+      const onDot = dots.map((d, i) => {
+        const fn = () => {
+          show(i);
+          restart();
+        };
+        d.addEventListener("click", fn);
+        return fn;
+      });
 
-      if (reduce) return;
-      const slideTimer = setInterval(
-        () => show((idx + 1) % slides.length),
-        6000
-      );
-      const wordTimer = setInterval(swapWord, 4200);
       return () => {
-        clearInterval(slideTimer);
-        clearInterval(wordTimer);
+        clearInterval(timer);
+        dots.forEach((d, i) => d.removeEventListener("click", onDot[i]));
       };
     },
-    { scope: root }
+    { scope: root, dependencies: [total], revertOnUpdate: true }
   );
+
+  if (!total) return null;
+  const active = banners[current] || banners[0];
 
   return (
     <section className="hero" ref={root}>
       <div className="hero-slides">
-        {SLIDES.map((s, i) => (
-          <div className="hero-slide" key={s.src} style={{ opacity: i === 0 ? 1 : 0 }}>
+        {banners.map((b, i) => (
+          <div className="hero-slide" key={b._id} style={{ opacity: i === 0 ? 1 : 0 }}>
             <Image
-              src={s.src}
-              alt={s.alt}
+              className="banner-img"
+              src={b.url}
+              alt={[b.title1, b.title2].filter(Boolean).join(" ") || "SEFD banner"}
               fill
               priority={i === 0}
               sizes="100vw"
@@ -134,41 +92,34 @@ export default function Hero() {
       <div className="hero-scrim" />
 
       <div className="wrap hero-inner">
-
-        <h1 className="hero-h1">
-          <span className="hero-line">Handmade by hands the world</span>
-          <span className="hero-line">
-            {/* the world{" "} */}
-            <span className="hero-word-wrap">
-              <span className="hero-word" ref={word}>
-                overlooked.
-              </span>
-            </span>
-          </span>
-        </h1>
-
-        <p className="hero-sub">
-          Warli art, jute, cotton and Ishwari divine offerings — crafted by
-          differently-abled artisans. Every purchase becomes a wage, a skill and
-          a life with dignity.
-        </p>
-
-        <div className="hero-cta">
-          <Link href="/shop" className="btn btn-orange">
-            Shop now <ArrowUpRight size={16} />
-          </Link>
+        <div className="hero-copy" key={active._id}>
+          <BannerTitle banner={active} as="h1" className="hero-h1 hero-line" />
+          {active.description && (
+            <p className="hero-sub" style={{ color: active.descriptionColor || "#ffffff" }}>
+              {active.description}
+            </p>
+          )}
+          {active.ctaText && active.ctaUrl && (
+            <div className="hero-cta">
+              <BannerCta banner={active} />
+            </div>
+          )}
         </div>
 
-        <div className="hero-dots">
-          {SLIDES.map((s, i) => (
-            <button
-              key={s.src}
-              className={`hero-dot ${i === 0 ? "active" : ""}`}
-              aria-label={`Show slide ${i + 1}`}
-            />
-          ))}
-        </div>
+        {total > 1 && (
+          <div className="hero-dots">
+            {banners.map((b, i) => (
+              <button
+                key={b._id}
+                className={`hero-dot ${i === 0 ? "active" : ""}`}
+                aria-label={`Show slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
+
+      <BannerCount current={current} total={total} />
     </section>
   );
 }

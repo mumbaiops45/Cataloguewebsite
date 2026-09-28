@@ -1,72 +1,82 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
-import { Check, ShoppingBag, Zap } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Reveal from "../anim/Reveal";
-import { ishwariCatalogue } from "../../lib/site";
+import AddToCartButton from "../cart/AddToCartButton";
 
-export default function IshwariProductGrid() {
-  const router = useRouter();
-  const [added, setAdded] = useState(null);
+const PAGE_SIZE = 15; // 3 full rows of 5
 
-  // This showcase uses a static catalogue (not real DB products), so it
-  // can't hit the real cart API — route shoppers to the live shop instead.
-  const handleAdd = (p) => {
-    setAdded(p.slug);
-    window.setTimeout(() => setAdded((cur) => (cur === p.slug ? null : cur)), 1600);
+// Ishwari products from the backend (category "ishwari"), paginated.
+export default function IshwariProductGrid({ products = [] }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageList = products.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const go = (n) => {
+    setPage(n);
+    document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleBuyNow = () => {
-    router.push("/shop");
-  };
+  if (!products.length) {
+    return <p className="shop-empty">No Ishwari products yet — check back soon.</p>;
+  }
 
   return (
-    <Reveal className="product-grid" stagger scroll y={20}>
-      {ishwariCatalogue.map((p) => (
-        <article className="product-card" key={p.slug}>
-          <div className="frame">
-            <Image
-              src={p.img}
-              alt={p.name}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
-            />
-          </div>
-          <div className="product-meta">
-            <div>
-              <span className="cat">Ishwari</span>
-              <h3>{p.name}</h3>
+    <>
+      <Reveal className="product-grid" stagger scroll={false} y={20} key={currentPage}>
+        {pageList.map((p, i) => (
+          <article className="product-card" key={p.slug}>
+            <div className="frame-wrap">
+              <Link href={`/shop/${p.slug}`} className="frame">
+                <Image
+                  src={p.image || "/file.svg"}
+                  alt={p.name}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
+                />
+                <span className="idx">{String((currentPage - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}</span>
+                <span className="cta-mini">
+                  <ArrowUpRight size={17} />
+                </span>
+              </Link>
+              <AddToCartButton product={p} />
             </div>
-            <span className="price">{p.priceLabel}/-</span>
-          </div>
-          <div className="product-actions">
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => handleAdd(p)}
-            >
-              {added === p.slug ? (
-                <>
-                  <Check size={14} /> Added
-                </>
-              ) : (
-                <>
-                  <ShoppingBag size={14} /> Add to Cart
-                </>
-              )}
+            <div className="product-meta">
+              <div>
+                <span className="cat">{p.category}</span>
+                <h3>
+                  <Link href={`/shop/${p.slug}`}>{p.name}</Link>
+                </h3>
+              </div>
+              <span className="price">{p.priceLabel}</span>
+            </div>
+          </article>
+        ))}
+      </Reveal>
+
+      {totalPages > 1 && (
+        <nav className="shop-pagination" aria-label="Ishwari product pages">
+          <button className="filter" onClick={() => go(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>
+            Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+            <button key={n} className={`filter ${n === currentPage ? "active" : ""}`} onClick={() => go(n)}>
+              {n}
             </button>
-            <button
-              type="button"
-              className="btn btn-orange btn-sm"
-              onClick={() => handleBuyNow(p)}
-            >
-              <Zap size={14} /> Buy Now
-            </button>
-          </div>
-        </article>
-      ))}
-    </Reveal>
+          ))}
+          <button
+            className="filter"
+            onClick={() => go(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </nav>
+      )}
+    </>
   );
 }

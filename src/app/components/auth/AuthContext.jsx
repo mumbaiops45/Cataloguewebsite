@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { loginCustomer, registerCustomer } from "../../router/auth.router";
+import { getMyProfile, updateMyProfile } from "../../router/user.router";
 import { getToken, setToken } from "../../utils/axios";
 import { decodeJwt } from "../../utils/jwt";
 
@@ -29,18 +30,41 @@ function writeProfile(profile) {
 // Prefer whatever the JWT itself carries (fresh, works on any device) and
 // only fall back to the locally-cached profile (from a prior register/login
 // in this browser) when the token doesn't include it.
+// Name/phone/image edited via the profile form live in the cached profile,
+// so that wins over the (possibly stale) JWT for those fields.
 function mergeIdentity(decoded, profile) {
   return {
     id: decoded?._id,
     role: decoded?.role,
-    name: decoded?.name || profile?.name,
+    name: profile?.name || decoded?.name,
     email: decoded?.email || profile?.email,
+    phone: profile?.phone || decoded?.phone || "",
+    image: profile?.image || decoded?.image || "",
   };
 }
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
+
+  // Pull the fresh profile (incl. image) from the backend and cache it.
+  const syncProfile = async () => {
+    try {
+      const u = await getMyProfile();
+      if (!u) return;
+      const profile = {
+        ...readProfile(),
+        name: u.name,
+        email: u.email,
+        phone: u.phone || "",
+        image: u.image || "",
+      };
+      writeProfile(profile);
+      setUser((prev) => (prev ? { ...prev, ...profile } : prev));
+    } catch {
+      // keep whatever we already have
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +74,7 @@ export function AuthProvider({ children }) {
         const decoded = decodeJwt(token);
         if (decoded && !cancelled) {
           setUser(mergeIdentity(decoded, readProfile()));
+          if (decoded.role === "user") syncProfile();
         } else if (!decoded) {
           setToken(null);
         }
@@ -68,10 +93,16 @@ export function AuthProvider({ children }) {
     const data = await loginCustomer(email, password);
     setToken(data.token);
     const decoded = decodeJwt(data.token);
-    const profile = { email, name: data.user?.name || data.name };
+    const profile = {
+      email,
+      name: data.user?.name || data.name,
+      phone: data.user?.phone || "",
+      image: data.user?.image || "",
+    };
     writeProfile(profile);
     const nextUser = mergeIdentity(decoded, profile);
     setUser(nextUser);
+    if (decoded?.role === "user") syncProfile();
     return nextUser;
   };
 
@@ -89,7 +120,26 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = useMemo(() => ({ user, ready, login, register, logout }), [user, ready]);
+  // PUT /api/user — update own name / phone / image, then refresh local state.
+  const updateProfile = async ({ name, phone, imageFile }) => {
+    const saved = await updateMyProfile({ name, phone, imageFile });
+    const profile = {
+      ...readProfile(),
+      email: user?.email,
+      name,
+      phone,
+      image: saved?.image || user?.image || "",
+    };
+    writeProfile(profile);
+    setUser((u) => ({ ...u, name, phone, image: profile.image }));
+    return saved;
+  };
+
+  const value = useMemo(
+    () => ({ user, ready, login, register, logout, updateProfile }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, ready]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

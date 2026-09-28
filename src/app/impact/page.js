@@ -4,7 +4,7 @@ import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
 import Counter from "../components/anim/Counter";
 import Image from "next/image";
-import { impactStats, awards, ngoPartner, corporatePrograms } from "../lib/site";
+import { impactStats, ngoPartner, corporatePrograms } from "../lib/site";
 
 export const metadata = {
   title: "Impact",
@@ -40,28 +40,6 @@ export default function ImpactPage() {
                 <p>{s.label}</p>
               </div>
             ))}
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="section-sm" style={{ background: "var(--paper)" }}>
-        <div className="wrap">
-          <p className="eyebrow">Awards &amp; recognition</p>
-          <SplitHeading as="h2" scroll className="display-3" style={{ marginTop: 16 }}>
-            Recognised for the work.
-          </SplitHeading>
-          <Reveal className="award-grid" stagger style={{ marginTop: 40 }}>
-            {awards.map((a) => (
-              <div className="award" key={a.title}>
-                <b>{a.title}</b>
-                <span>{a.by}</span>
-              </div>
-            ))}
-          </Reveal>
-          <Reveal style={{ marginTop: 28 }}>
-            <Link href="/awards" className="link-underline">
-              See the full wall of honour <ArrowUpRight size={15} />
-            </Link>
           </Reveal>
         </div>
       </section>

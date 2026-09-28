@@ -5,6 +5,7 @@ import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
 import IshwariProductGrid from "../components/ishwari/IshwariProductGrid";
 import { sefdAbout, ishwariAbout } from "../lib/site";
+import { getCatalog } from "../utils/catalog";
 
 export const metadata = {
   title: "Ishwari — Divine Offerings",
@@ -19,7 +20,16 @@ const traits = [
   { k: "Empowering", t: "Empowering lives, creating livelihoods, one gift at a time." },
 ];
 
-export default function IshwariPage() {
+// Render per request so the Ishwari products reflect the live DB.
+export const dynamic = "force-dynamic";
+
+// Matches the backend category by slug or name ("ishwari", also "iswari").
+const isIshwari = (s = "") => /ish?wari/i.test(s);
+
+export default async function IshwariPage() {
+  const { products } = await getCatalog().catch(() => ({ products: [] }));
+  const ishwariProducts = products.filter((p) => isIshwari(p.categorySlug) || isIshwari(p.category));
+
   return (
     <>
       <header className="ishwari-head">
@@ -79,13 +89,12 @@ export default function IshwariPage() {
             Product Catalogue
           </SplitHeading>
           <p className="lead ishwari-catalogue-lead">
-            Every Ishwari piece, in stock and ready to gift. Add what you love
-            to your cart, or buy it now — proceeds go straight to the artisans
-            who made it.
+            Every Ishwari piece, ready to gift. Add what you love to your cart
+            — proceeds go straight to the artisans who made it.
           </p>
 
           <div className="ishwari-catalogue-grid">
-            <IshwariProductGrid />
+            <IshwariProductGrid products={ishwariProducts} />
           </div>
         </div>
       </section>

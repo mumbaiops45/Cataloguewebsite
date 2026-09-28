@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LogOut, MapPin, Package, Settings, User2 } from "lucide-react";
 import AddressManager from "../components/account/AddressManager";
 import OrdersList from "../components/account/OrdersList";
+import ProfileForm from "../components/account/ProfileForm";
 import { useAuth } from "../components/auth/AuthContext";
 
 const NAV = [
@@ -61,7 +62,14 @@ export default function AccountPage() {
       <div className="wrap acct-shell">
         <aside className="acct-side">
           <div className="acct-side-brand">
-            <span className="acct-avatar acct-avatar-orange">{initial}</span>
+            <span className="acct-avatar acct-avatar-orange">
+              {user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.image} alt="" className="acct-avatar-img" />
+              ) : (
+                initial
+              )}
+            </span>
             <div>
               <b>{user.name || "My account"}</b>
               <small>Customer panel</small>
@@ -114,20 +122,7 @@ export default function AccountPage() {
                   ))}
                 </div>
 
-                {settingsTab === "profile" && (
-                  <div className="acct-card">
-                    <div className="acct-fields">
-                      <div className="field">
-                        <label>Name</label>
-                        <input value={user.name || ""} readOnly />
-                      </div>
-                      <div className="field">
-                        <label>Email</label>
-                        <input value={user.email || ""} readOnly />
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {settingsTab === "profile" && <ProfileForm />}
 
                 {settingsTab === "addresses" && (
                   <div className="acct-card">

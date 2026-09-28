@@ -5,10 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ShoppingBag, User, Search, ChevronDown, ChevronRight, Tag } from "lucide-react";
-import { nav } from "../../lib/site";
+import { contact, nav } from "../../lib/site";
 import { useCartStore, selectCartCount } from "../../store/cartStore";
 import { useShippingStore } from "../../store/shippingStore";
 import AnnounceBar from "./AnnounceBar";
+import SearchSuggest from "./SearchSuggest";
 import { useAuth } from "../auth/AuthContext";
 import { useLoginModal } from "../auth/LoginModalContext";
 import { useAccountDrawer } from "../auth/AccountDrawerContext";
@@ -30,6 +31,23 @@ export default function Navbar({ categories = [] }) {
   const [catOpen, setCatOpen] = useState(false);
   const [query, setQuery] = useState("");
   const catRef = useRef(null);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const searchRef = useRef(null);
+
+  const closeSuggest = () => {
+    setSuggestOpen(false);
+    setQuery("");
+  };
+
+  // Close the product suggestions on outside click.
+  useEffect(() => {
+    if (!suggestOpen) return;
+    const onDown = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) setSuggestOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [suggestOpen]);
 
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -42,6 +60,7 @@ export default function Navbar({ categories = [] }) {
       return;
     }
     setOpen(false);
+    setSuggestOpen(false);
     router.push(`/shop?q=${encodeURIComponent(q)}`);
   };
 
@@ -107,17 +126,24 @@ export default function Navbar({ categories = [] }) {
             </span>
           </Link>
 
-          <form className="nav-search desktop-only" onSubmit={submitSearch} role="search">
+          <form className="nav-search desktop-only" onSubmit={submitSearch} role="search" ref={searchRef}>
             <button type="submit" className="search-submit" aria-label="Search">
               <Search size={16} />
             </button>
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSuggestOpen(true);
+              }}
+              onFocus={() => setSuggestOpen(true)}
+              onKeyDown={(e) => e.key === "Escape" && setSuggestOpen(false)}
               placeholder="Search products…"
               aria-label="Search products"
+              autoComplete="off"
             />
+            <SearchSuggest query={query} visible={suggestOpen} onPick={closeSuggest} />
           </form>
 
           <div className="nav-actions">
@@ -130,7 +156,12 @@ export default function Navbar({ categories = [] }) {
               {user ? (
                 <>
                   <span className="nav-login-avatar">
-                    <User size={15} strokeWidth={2.5} />
+                    {user.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={user.image} alt="" className="nav-login-img" />
+                    ) : (
+                      <User size={15} strokeWidth={2.5} />
+                    )}
                   </span>
                   <span className="nav-login-name">{user.name?.split(" ")[0] || "Account"}</span>
                 </>
@@ -218,8 +249,17 @@ export default function Navbar({ categories = [] }) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products…"
               aria-label="Search products"
+              autoComplete="off"
             />
           </form>
+          <SearchSuggest
+            query={query}
+            visible={open}
+            onPick={() => {
+              setOpen(false);
+              setQuery("");
+            }}
+          />
           {categories.length > 0 && (
             <>
               <div className="mobile-cat-label">Shop by category</div>
@@ -269,10 +309,8 @@ export default function Navbar({ categories = [] }) {
           </button>
         </div>
         <div className="mobile-foot">
-          <a href="tel:+918779171635">+91 8779171635</a>
-          <a href="mailto:selfesteem.disabled@gmail.com">
-            selfesteem.disabled@gmail.com
-          </a>
+          <a href={contact.phoneHref}>{contact.phone}</a>
+          <a href={contact.emailHref}>{contact.email}</a>
         </div>
       </div>
     </>

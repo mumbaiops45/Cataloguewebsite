@@ -17,9 +17,9 @@ const rest = awardsGallery.filter((a) => !a.featured);
 export default function AwardsPage() {
   return (
     <>
-      <header className="page-head" style={{ background: "var(--maroon)" }}>
+      <header className="page-head">
         <div className="wrap">
-          <p className="eyebrow" style={{ color: "var(--orange-soft)" }}>
+          <p className="eyebrow">
             Wall of honour
           </p>
           <SplitHeading as="h1">
