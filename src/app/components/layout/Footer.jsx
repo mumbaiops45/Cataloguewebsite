@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "./FooterLink";
 import { Phone, Mail, MapPin, ArrowUpRight, Globe } from "lucide-react";
 import { FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { contact, nav } from "../../lib/site";
