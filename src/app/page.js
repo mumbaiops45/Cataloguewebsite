@@ -5,7 +5,6 @@ import Collections from "./components/home/Collections";
 import MidBanner from "./components/home/MidBanner";
 import Impact from "./components/home/Impact";
 import InfoStrip from "./components/home/InfoStrip";
-import FloatingActions from "./components/home/FloatingActions";
 import { getCategoryList } from "./utils/catalog";
 import { getBanners, splitBanners } from "./router/banner.router";
 
@@ -29,7 +28,6 @@ export default async function Home() {
       <MidBanner banners={middle} />
       <InfoStrip />
       <Impact />
-      <FloatingActions />
     </div >
   );
 }

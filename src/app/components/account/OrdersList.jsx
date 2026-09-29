@@ -174,7 +174,7 @@ export default function OrdersList() {
           <tbody>
             {pageList.map((o) => {
               const isOpen = openId === o._id;
-              const qty = o.items.reduce((n, it) => n + it.quantity, 0);
+              const uniqueCount = new Set(o.items.map((it) => String(it.product))).size;
               return (
                 <Fragment key={o._id}>
                   <tr
@@ -184,7 +184,7 @@ export default function OrdersList() {
                   >
                     <td className="otable-id" data-label="Order ID">{o._id}</td>
                     <td data-label="Date">{fmtDate(o.createdAt)}</td>
-                    <td data-label="Items">{qty}</td>
+                    <td data-label="Items">{uniqueCount}</td>
                     <td className="otable-total" data-label="Total">{fmt(o.total)}</td>
                     <td data-label="Status">
                       <span className={`order-tag st-${o.status}`}>{label(o.status)}</span>

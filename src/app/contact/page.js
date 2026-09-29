@@ -1,7 +1,6 @@
 import { Phone, Mail, MapPin, Globe } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
-import ContactForm from "./ContactForm";
 import { contact } from "../lib/site";
 
 export const metadata = {
@@ -27,7 +26,7 @@ export default function ContactPage() {
       </header>
 
       <section className="section">
-        <div className="wrap contact-grid">
+        <div className="wrap">
           <Reveal>
             <p className="eyebrow">Reach us</p>
             <div className="contact-lines" style={{ marginTop: 20 }}>
@@ -48,11 +47,6 @@ export default function ContactPage() {
                 {contact.address}
               </p>
             </div>
-          </Reveal>
-
-          <Reveal>
-            <p className="eyebrow">Send a message</p>
-            <ContactForm />
           </Reveal>
         </div>
       </section>

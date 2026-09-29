@@ -6,6 +6,7 @@ import Footer from "./components/layout/Footer";
 import SmoothScroll from "./components/anim/SmoothScroll";
 import CartDrawer from "./components/cart/CartDrawer";
 import ToastHost from "./components/layout/ToastHost";
+import FloatingActions from "./components/home/FloatingActions";
 import { AuthProvider } from "./components/auth/AuthContext";
 import { LoginModalProvider } from "./components/auth/LoginModalContext";
 import LoginModal from "./components/auth/LoginModal";
@@ -77,6 +78,7 @@ export default async function RootLayout({ children }) {
               <AccountDrawer />
               <CartDrawer />
               <ToastHost />
+              <FloatingActions />
             </AccountDrawerProvider>
           </LoginModalProvider>
         </AuthProvider>

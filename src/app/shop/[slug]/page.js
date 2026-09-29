@@ -59,9 +59,7 @@ export default async function ProductPage({ params }) {
           <p className="cat">{product.category}</p>
           <h1>{product.name}</h1>
           <p className="price">
-            {product.priceLabel}
-            <span className="tag">{product.stock > 0 ? "In stock" : "Out of stock"}</span>
-          </p>
+            {product.priceLabel}          </p>
           <p>{product.description}</p>
 
           <ProductActions product={product} />

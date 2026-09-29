@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowUp, Phone } from "lucide-react";
 import { contact } from "../../lib/site";
@@ -50,9 +49,9 @@ export default function FloatingActions() {
       >
         <WhatsAppIcon width={24} height={24} />
       </a>
-      <Link href="/contact" className="fab fab-contact" aria-label="Contact us">
+      <a href={contact.phoneHref} className="fab fab-contact" aria-label={`Call ${contact.phone}`}>
         <Phone size={20} />
-      </Link>
+      </a>
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

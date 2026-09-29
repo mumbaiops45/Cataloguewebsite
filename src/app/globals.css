@@ -1727,6 +1727,9 @@ h1 em, h2 em, h3 em, .italic-accent {
 .pdp-qty { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
 .pdp-qty .qty-stepper { background: var(--cream); }
 .pdp-qty span { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.pdp-qty .qty-stepper button:disabled { opacity: 0.35; cursor: not-allowed; color: var(--navy); }
+.pdp-stock { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: var(--green); background: var(--green-soft); padding: 4px 10px; border-radius: 999px; }
+.pdp-stock.out { color: #b42318; background: #fde8e7; }
 
 .pdp-note { margin-top: 24px; padding: 18px 20px; background: var(--green-soft); border-radius: 12px; font-size: 13px; color: var(--green); line-height: 1.6; }
 .pdp-actions { display: flex; flex-wrap: wrap; gap: 12px; }
