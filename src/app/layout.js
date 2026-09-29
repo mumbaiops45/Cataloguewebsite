@@ -70,7 +70,7 @@ export default async function RootLayout({ children }) {
 
               <SmoothScroll>
                 <main id="main" >{children}</main>
-                <Footer />
+                <Footer categories={categories} />
               </SmoothScroll>
 
               <LoginModal />

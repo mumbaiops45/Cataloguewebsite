@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, ArrowUpRight, Globe } from "lucide-react";
 import { FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { contact, nav } from "../../lib/site";
 
-export default function Footer() {
+export default function Footer({ categories = [] }) {
   return (
     <footer className="footer">
       <div className="wrap footer-top">
@@ -51,17 +51,17 @@ export default function Footer() {
 
         <div className="footer-col">
           <h3>Shop</h3>
-          <Link href="/shop">All products</Link>
-          <Link href="/shop?category=warli-art">Warli Art</Link>
-          <Link href="/shop?category=jute">Jute Bags</Link>
-          <Link href="/shop?category=cotton">Cotton Bags</Link>
-          <Link href="/ishwari">Ishwari</Link>
+          {categories.map((c) => (
+            <Link key={c.slug} href={`/shop?category=${c.slug}`}>
+              {c.name}
+            </Link>
+          ))}
         </div>
 
         <div className="footer-col">
           <h3>Foundation</h3>
           {nav
-            .filter((i) => i.href !== "/shop" && i.href !== "/ishwari")
+            .filter((i) => i.href !== "/shop")
             .map((i) => (
               <Link key={i.href} href={i.href}>
                 {i.name}
