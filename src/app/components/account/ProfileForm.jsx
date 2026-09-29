@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 import { toast } from "../../store/toastStore";
+import { firstError, only, rules } from "../../utils/validate";
 
 // Edit own profile: photo, name, phone. Email is read-only.
 export default function ProfileForm() {
@@ -20,10 +21,28 @@ export default function ProfileForm() {
   const avatar = preview || user.image;
   const initial = (name || user.email || "?").trim().charAt(0).toUpperCase();
 
+  const [errors, setErrors] = useState({});
+
+  // Only real images, max 5 MB.
+  const pickImage = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setErrors((er) => ({ ...er, image: "Please choose an image file (JPG, PNG or WEBP)." }));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((er) => ({ ...er, image: "The image must be smaller than 5 MB." }));
+      return;
+    }
+    setErrors((er) => ({ ...er, image: "" }));
+    setImageFile(file);
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return toast.error("Name is required");
-    if (phone && !/^\d{10}$/.test(phone.trim())) return toast.error("Enter a valid 10-digit phone number");
+    const next = { name: rules.name(name), phone: rules.phone(phone) };
+    setErrors(next);
+    if (firstError(next)) return;
     setSaving(true);
     try {
       await updateProfile({ name: name.trim(), phone: phone.trim(), imageFile });
@@ -64,14 +83,33 @@ export default function ProfileForm() {
           type="file"
           accept="image/*"
           hidden
-          onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+          onChange={(e) => pickImage(e.target.files?.[0])}
         />
       </div>
+      {errors.image && (
+        <small className="field-error" role="alert" style={{ marginTop: -12, marginBottom: 16 }}>
+          {errors.image}
+        </small>
+      )}
 
       <div className="acct-fields">
         <div className="field">
           <label htmlFor="pf-name">Name</label>
-          <input id="pf-name" value={name} onChange={(e) => setName(e.target.value)} required />
+          <input
+            id="pf-name"
+            value={name}
+            maxLength={50}
+            aria-invalid={!!errors.name}
+            onChange={(e) => {
+              setName(only.letters(e.target.value));
+              setErrors((er) => ({ ...er, name: "" }));
+            }}
+          />
+          {errors.name && (
+            <small className="field-error" role="alert">
+              {errors.name}
+            </small>
+          )}
         </div>
         <div className="field">
           <label htmlFor="pf-phone">Phone</label>
@@ -81,9 +119,18 @@ export default function ProfileForm() {
             inputMode="numeric"
             maxLength={10}
             value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+            aria-invalid={!!errors.phone}
+            onChange={(e) => {
+              setPhone(only.digits(e.target.value, 10));
+              setErrors((er) => ({ ...er, phone: "" }));
+            }}
             placeholder="10-digit mobile number"
           />
+          {errors.phone && (
+            <small className="field-error" role="alert">
+              {errors.phone}
+            </small>
+          )}
         </div>
         <div className="field">
           <label htmlFor="pf-email">Email</label>

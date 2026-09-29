@@ -1671,7 +1671,11 @@ h1 em, h2 em, h3 em, .italic-accent {
 .shop-pagination .filter:disabled:hover { border-color: var(--line); }
 
 /* product detail */
-.pdp { padding-top: clamp(110px, 10vw, 150px); }
+/* Clears the fixed navbar: announce 42 + main bar 74 + category bar 54 = 170px, plus breathing room. */
+/* .pdp.section-sm beats the later .section-sm padding shorthand. */
+.pdp, .pdp.section-sm { padding-top: 204px; }
+@media (max-width: 1180px) { .pdp, .pdp.section-sm { padding-top: 146px; } } /* category bar hidden: 116px */
+@media (max-width: 720px) { .pdp, .pdp.section-sm { padding-top: 130px; } }
 .top-offset { padding-top: clamp(120px, 11vw, 160px); }
 .top-offset-lg { padding-top: clamp(140px, 18vw, 190px); }
 .pdp-grid { display: grid; grid-template-columns: minmax(240px, 360px) 1fr; gap: clamp(32px, 5vw, 70px); align-items: start; }
@@ -1733,7 +1737,19 @@ h1 em, h2 em, h3 em, .italic-accent {
 .pdp-trust svg { color: var(--tertiary); }
 .pdp-trust span { font-size: 11px; font-weight: 600; line-height: 1.4; color: var(--ink-soft); }
 
-.breadcrumb { display: flex; gap: 8px; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-soft); margin-bottom: 30px; }
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-bottom: 30px;
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
+.breadcrumb a { color: var(--navy); font-weight: 600; }
+.breadcrumb > span:last-child { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
 .breadcrumb a:hover { color: var(--orange-deep); }
 
 .pdp-related { margin-top: clamp(70px, 10vw, 130px); padding: clamp(48px, 6vw, 76px) 0; background: var(--cream-2); border-radius: 24px; }
@@ -3517,3 +3533,8 @@ img, video { max-width: 100%; }
   .shop-pagination { gap: 6px; }
   .search-suggest-row { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; }
 }
+
+/* Form validation messages */
+.field-error { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 600; color: #c62828; line-height: 1.4; }
+.field-hint { display: block; margin-top: 6px; font-size: 12px; color: var(--ink-soft); }
+.field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: #c62828; box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }

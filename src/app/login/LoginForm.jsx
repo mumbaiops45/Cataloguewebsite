@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import { contact } from "../lib/site";
 import { useAuth } from "../components/auth/AuthContext";
+import { firstError, only, rules } from "../utils/validate";
 import { useLoginModal } from "../components/auth/LoginModalContext";
 
 const emptyForm = { name: "", email: "", phone: "", password: "" };
@@ -19,25 +20,41 @@ export default function LoginForm() {
   const [show, setShow] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  // Filter what can be typed per field, and clear that field's error.
+  const filters = { name: only.letters, phone: (v) => only.digits(v, 10), email: only.noSpaces, password: (v) => v };
+  const set = (key) => (e) => {
+    const value = filters[key](e.target.value);
+    setForm((f) => ({ ...f, [key]: value }));
+    setFieldErrors((fe) => ({ ...fe, [key]: "" }));
+  };
+  const fieldError = (key) =>
+    fieldErrors[key] ? (
+      <small className="field-error" role="alert">
+        {fieldErrors[key]}
+      </small>
+    ) : null;
 
   const switchMode = (next) => {
     setError("");
+    setFieldErrors({});
     setNotice("");
     setMode(next);
   };
 
   const validate = () => {
-    if (mode === "register" && !form.name.trim()) return "Please enter your full name.";
-    if (!form.email.trim()) return "Please enter your email address.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Please enter a valid email address.";
-    if (mode === "register" && !form.phone.trim()) return "Please enter your phone number.";
-    if (!form.password) return "Please enter your password.";
-    if (mode === "register" && form.password.length < 8) return "Password must be at least 8 characters.";
-    return "";
+    const register = mode === "register";
+    const errors = {
+      name: register ? rules.name(form.name, "full name") : "",
+      email: rules.email(form.email),
+      phone: register ? rules.phone(form.phone) : "",
+      password: rules.password(form.password, { strict: register }),
+    };
+    setFieldErrors(errors);
+    return firstError(errors);
   };
 
   const onSubmit = async (e) => {
@@ -102,7 +119,10 @@ export default function LoginForm() {
               placeholder="Your name"
               value={form.name}
               onChange={set("name")}
+              maxLength={50}
+              aria-invalid={!!fieldErrors.name}
             />
+            {fieldError("name")}
           </div>
         )}
 
@@ -116,7 +136,9 @@ export default function LoginForm() {
             placeholder="you@example.com"
             value={form.email}
             onChange={set("email")}
+            aria-invalid={!!fieldErrors.email}
           />
+          {fieldError("email")}
         </div>
 
         {mode === "register" && (
@@ -130,7 +152,11 @@ export default function LoginForm() {
               placeholder="10-digit mobile number"
               value={form.phone}
               onChange={set("phone")}
+              inputMode="numeric"
+              maxLength={10}
+              aria-invalid={!!fieldErrors.phone}
             />
+            {fieldError("phone")}
           </div>
         )}
 
@@ -155,6 +181,10 @@ export default function LoginForm() {
               {show ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {mode === "register" && !fieldErrors.password && (
+            <small className="field-hint">At least 8 characters, with a letter and a number.</small>
+          )}
+          {fieldError("password")}
         </div>
 
         {mode === "login" && (
@@ -170,7 +200,7 @@ export default function LoginForm() {
         )}
 
         {notice && <p className="auth-note">{notice}</p>}
-        {error && (
+        {error && !Object.values(fieldErrors).some(Boolean) && (
           <p className="auth-note auth-error" role="alert">
             {error}
           </p>

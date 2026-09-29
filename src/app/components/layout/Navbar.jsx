@@ -140,6 +140,7 @@ export default function Navbar({ categories = [] }) {
               onFocus={() => setSuggestOpen(true)}
               onKeyDown={(e) => e.key === "Escape" && setSuggestOpen(false)}
               placeholder="Search products…"
+              maxLength={60}
               aria-label="Search products"
               autoComplete="off"
             />
@@ -248,6 +249,7 @@ export default function Navbar({ categories = [] }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search products…"
+              maxLength={60}
               aria-label="Search products"
               autoComplete="off"
             />

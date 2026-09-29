@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, MapPin, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { createAddress, deleteAddress, getAddresses, updateAddress } from "../../router/address.router";
 import { toast } from "../../store/toastStore";
+import { firstError, only, rules } from "../../utils/validate";
 
 const emptyForm = {
   name: "",
@@ -18,17 +19,28 @@ const emptyForm = {
   isDefault: false,
 };
 
-function validate(f) {
-  if (!f.name.trim()) return "Please enter the full name.";
-  if (!/^\d{10}$/.test(f.phone.trim())) return "Please enter a valid 10-digit phone number.";
-  if (f.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) return "Please enter a valid email.";
-  if (!f.address.trim()) return "Please enter the address.";
-  if (!f.city.trim()) return "Please enter the city.";
-  if (!f.state.trim()) return "Please enter the state.";
-  if (!/^\d{6}$/.test(f.pincode.trim())) return "Please enter a valid 6-digit pincode.";
-  if (!f.country.trim()) return "Please enter the country.";
-  return "";
-}
+const validate = (f) => ({
+  name: rules.name(f.name, "full name"),
+  phone: rules.phone(f.phone),
+  email: rules.email(f.email, { required: false }),
+  address: rules.text(f.address, "address", { min: 5, max: 200 }),
+  landmark: f.landmark.trim().length > 100 ? "The landmark must be under 100 characters." : "",
+  city: rules.place(f.city, "city"),
+  state: rules.place(f.state, "state"),
+  pincode: rules.pincode(f.pincode),
+  country: rules.place(f.country, "country"),
+});
+
+// What each field allows to be typed.
+const filters = {
+  name: only.letters,
+  phone: (v) => only.digits(v, 10),
+  email: only.noSpaces,
+  city: only.letters,
+  state: only.letters,
+  country: only.letters,
+  pincode: (v) => only.digits(v, 6),
+};
 
 export default function AddressManager({ selectable = false, selectedId = null, onSelect, onChange, layout = "grid" }) {
   const [addresses, setAddresses] = useState([]);
@@ -36,6 +48,7 @@ export default function AddressManager({ selectable = false, selectedId = null, 
   const [editing, setEditing] = useState(null); // null | "new" | address._id
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
   const pickDefault = (list, preferId) => {
@@ -77,25 +90,53 @@ export default function AddressManager({ selectable = false, selectedId = null, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const set = (key) => (e) => {
+    const value = filters[key] ? filters[key](e.target.value) : e.target.value;
+    setForm((f) => ({ ...f, [key]: value }));
+    setFieldErrors((fe) => ({ ...fe, [key]: "" }));
+  };
+
+  // One labelled input with its own error message underneath.
+  const field = (key, label, props = {}) => (
+    <div className={`field ${props.full ? "full" : ""}`}>
+      <label htmlFor={`addr-${key}`}>{label}</label>
+      <input
+        id={`addr-${key}`}
+        value={form[key]}
+        onChange={set(key)}
+        aria-invalid={!!fieldErrors[key]}
+        placeholder={props.placeholder}
+        inputMode={props.inputMode}
+        maxLength={props.maxLength}
+      />
+      {fieldErrors[key] && (
+        <small className="field-error" role="alert">
+          {fieldErrors[key]}
+        </small>
+      )}
+    </div>
+  );
 
   const startNew = () => {
     setForm({ ...emptyForm, isDefault: addresses.length === 0 });
+    setFieldErrors({});
     setError("");
     setEditing("new");
   };
 
   const startEdit = (a) => {
     setForm({ ...emptyForm, ...a, email: a.email || "", landmark: a.landmark || "" });
+    setFieldErrors({});
     setError("");
     setEditing(a._id);
   };
 
   const save = async (e) => {
     e.preventDefault();
-    const msg = validate(form);
-    if (msg) {
-      setError(msg);
+    const errors = validate(form);
+    setFieldErrors(errors);
+    if (firstError(errors)) {
+      setError("");
       return;
     }
     setError("");
@@ -282,42 +323,15 @@ export default function AddressManager({ selectable = false, selectedId = null, 
         <form className="addr-form" onSubmit={save} noValidate>
           <h3>{editing === "new" ? "Add a new address" : "Edit address"}</h3>
           <div className="checkout-fields">
-            <div className="field">
-              <label>Full name</label>
-              <input value={form.name} onChange={set("name")} placeholder="Full name" />
-            </div>
-            <div className="field">
-              <label>Phone</label>
-              <input value={form.phone} onChange={set("phone")} placeholder="10-digit mobile number" inputMode="numeric" />
-            </div>
-            <div className="field full">
-              <label>Email (optional)</label>
-              <input value={form.email} onChange={set("email")} placeholder="you@example.com" />
-            </div>
-            <div className="field full">
-              <label>Address</label>
-              <input value={form.address} onChange={set("address")} placeholder="Flat, house no., building, street" />
-            </div>
-            <div className="field full">
-              <label>Landmark (optional)</label>
-              <input value={form.landmark} onChange={set("landmark")} placeholder="Near…" />
-            </div>
-            <div className="field">
-              <label>City</label>
-              <input value={form.city} onChange={set("city")} placeholder="City" />
-            </div>
-            <div className="field">
-              <label>State</label>
-              <input value={form.state} onChange={set("state")} placeholder="State" />
-            </div>
-            <div className="field">
-              <label>Pincode</label>
-              <input value={form.pincode} onChange={set("pincode")} placeholder="400708" inputMode="numeric" />
-            </div>
-            <div className="field">
-              <label>Country</label>
-              <input value={form.country} onChange={set("country")} />
-            </div>
+            {field("name", "Full name", { placeholder: "Full name", maxLength: 50 })}
+            {field("phone", "Phone", { placeholder: "10-digit mobile number", inputMode: "numeric", maxLength: 10 })}
+            {field("email", "Email (optional)", { placeholder: "you@example.com", full: true })}
+            {field("address", "Address", { placeholder: "Flat, house no., building, street", full: true, maxLength: 200 })}
+            {field("landmark", "Landmark (optional)", { placeholder: "Near…", full: true, maxLength: 100 })}
+            {field("city", "City", { placeholder: "City", maxLength: 50 })}
+            {field("state", "State", { placeholder: "State", maxLength: 50 })}
+            {field("pincode", "Pincode", { placeholder: "400708", inputMode: "numeric", maxLength: 6 })}
+            {field("country", "Country", { maxLength: 50 })}
           </div>
           <label className="check" style={{ marginTop: 12 }}>
             <input

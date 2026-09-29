@@ -2,32 +2,36 @@
 
 import { useState } from "react";
 import { contact } from "../lib/site";
+import { firstError, only, rules } from "../utils/validate";
 
 const emptyForm = { name: "", email: "", message: "" };
+const filters = { name: only.letters, email: only.noSpaces, message: (v) => v };
 
 export default function ContactForm() {
   const [form, setForm] = useState(emptyForm);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
-
-  const validate = () => {
-    if (!form.name.trim()) return "Please enter your name.";
-    if (!form.email.trim()) return "Please enter your email address.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Please enter a valid email address.";
-    if (!form.message.trim()) return "Please tell us how we can help.";
-    return "";
+  const set = (key) => (e) => {
+    setForm((f) => ({ ...f, [key]: filters[key](e.target.value) }));
+    setErrors((er) => ({ ...er, [key]: "" }));
   };
 
   const onSubmit = (e) => {
-    const validationError = validate();
-    if (validationError) {
-      e.preventDefault();
-      setError(validationError);
-      return;
-    }
-    setError("");
+    const next = {
+      name: rules.name(form.name),
+      email: rules.email(form.email),
+      message: rules.text(form.message, "message", { min: 10, max: 1000 }),
+    };
+    setErrors(next);
+    if (firstError(next)) e.preventDefault();
   };
+
+  const err = (key) =>
+    errors[key] ? (
+      <small className="field-error" role="alert">
+        {errors[key]}
+      </small>
+    ) : null;
 
   return (
     <form
@@ -40,22 +44,42 @@ export default function ContactForm() {
     >
       <div className="field">
         <label htmlFor="name">Name</label>
-        <input id="name" name="name" type="text" value={form.name} onChange={set("name")} />
+        <input
+          id="name"
+          name="name"
+          type="text"
+          maxLength={50}
+          value={form.name}
+          onChange={set("name")}
+          aria-invalid={!!errors.name}
+        />
+        {err("name")}
       </div>
       <div className="field">
         <label htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" value={form.email} onChange={set("email")} />
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={set("email")}
+          aria-invalid={!!errors.email}
+        />
+        {err("email")}
       </div>
       <div className="field">
         <label htmlFor="message">How can we help?</label>
-        <textarea id="message" name="message" rows={5} value={form.message} onChange={set("message")} />
+        <textarea
+          id="message"
+          name="message"
+          rows={5}
+          maxLength={1000}
+          value={form.message}
+          onChange={set("message")}
+          aria-invalid={!!errors.message}
+        />
+        {err("message")}
       </div>
-
-      {error && (
-        <p className="auth-note auth-error" role="alert">
-          {error}
-        </p>
-      )}
 
       <button type="submit" className="btn btn-orange">
         Send enquiry
