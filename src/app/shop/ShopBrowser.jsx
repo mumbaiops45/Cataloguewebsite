@@ -19,18 +19,24 @@ const PAGE_SIZE = 15; // 3 full rows of 5
 
 export default function ShopBrowser({ initialCategories = [], initialProducts = [], searchIds = null }) {
   const params = useSearchParams();
-  const initial = params.get("category") || "all";
+  // The URL is the source of truth for the category, so navbar links
+  // (/shop?category=…) and the tabs below both switch the product list.
+  const cat = params.get("category") || "all";
 
   const [categories] = useState(initialCategories);
   const [products] = useState(initialProducts);
-  const [cat, setCat] = useState(initial);
   const [sort, setSort] = useState("featured");
   const q = params.get("q") || "";
-  const [page, setPage] = useState(1);
+  // page resets to 1 whenever the category changes
+  const [paging, setPaging] = useState({ cat, page: 1 });
+  const page = paging.cat === cat ? paging.page : 1;
+  const setPage = (next) =>
+    setPaging((prev) => {
+      const current = prev.cat === cat ? prev.page : 1;
+      return { cat, page: typeof next === "function" ? next(current) : next };
+    });
 
   const pick = (next) => {
-    setCat(next);
-    setPage(1);
     // keep the search query when switching category
     const qs = new URLSearchParams();
     if (next !== "all") qs.set("category", next);

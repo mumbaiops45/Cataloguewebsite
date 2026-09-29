@@ -13,7 +13,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ShopPage({ searchParams }) {
-  const { q } = await searchParams;
+  const { q, category } = await searchParams;
   const keyword = typeof q === "string" ? q.trim() : "";
 
   const [{ categories, products }, matches] = await Promise.all([
@@ -36,7 +36,7 @@ export default async function ShopPage({ searchParams }) {
       </header>
 
       <Suspense fallback={<div className="wrap section-sm">Loading products…</div>}>
-        <ShopBrowser initialCategories={categories} initialProducts={products} searchIds={searchIds} />
+        <ShopBrowser key={typeof category === "string" ? category : "all"} initialCategories={categories} initialProducts={products} searchIds={searchIds} />
       </Suspense>
     </div>
   );
