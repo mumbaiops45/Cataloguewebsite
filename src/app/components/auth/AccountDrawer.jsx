@@ -30,6 +30,16 @@ export default function AccountDrawer() {
 
   if (!isOpen || !user) return null;
 
+  // Already on /account: a client-side hash link doesn't fire `hashchange`,
+  // so the page wouldn't switch tabs — set the hash directly instead.
+  const goTab = (e, tab) => {
+    close();
+    if (window.location.pathname === "/account") {
+      e.preventDefault();
+      window.location.hash = tab;
+    }
+  };
+
   const handleLogout = () => {
     logout();
     close();
@@ -56,7 +66,12 @@ export default function AccountDrawer() {
 
         <div className="account-drawer-head">
           <span className="account-drawer-avatar">
-            <User size={20} />
+            {user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.image} alt="" />
+            ) : (
+              <User size={20} />
+            )}
           </span>
           <div>
             <p className="eyebrow">Account</p>
@@ -66,13 +81,13 @@ export default function AccountDrawer() {
         </div>
 
         <nav className="account-drawer-nav">
-          <Link href="/account" className="account-drawer-link" onClick={close}>
+          <Link href="/account#profile" className="account-drawer-link" onClick={(e) => goTab(e, "profile")}>
             <LayoutDashboard size={17} /> My account
           </Link>
-          <Link href="/account#orders" className="account-drawer-link" onClick={close}>
+          <Link href="/account#orders" className="account-drawer-link" onClick={(e) => goTab(e, "orders")}>
             <Package size={17} /> My orders
           </Link>
-          <Link href="/account#addresses" className="account-drawer-link" onClick={close}>
+          <Link href="/account#addresses" className="account-drawer-link" onClick={(e) => goTab(e, "addresses")}>
             <MapPin size={17} /> Addresses
           </Link>
         </nav>

@@ -143,4 +143,5 @@ export const useCartStore = create((set, get) => ({
   reset: () => set({ items: [], catalogMap: new Map(), hasFetched: false, isOpen: false }),
 }));
 
-export const selectCartCount = (state) => state.items.reduce((n, it) => n + it.quantity, 0);
+// Number of distinct products in the cart, not the summed quantity.
+export const selectCartCount = (state) => state.items.length;

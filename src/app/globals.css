@@ -2343,7 +2343,9 @@ h1 em, h2 em, h3 em, .italic-accent {
   border-radius: 50%;
   background: var(--tertiary);
   color: #fff;
+  overflow: hidden;
 }
+.account-drawer-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .account-drawer-head h2 { margin-top: 2px; font-size: 1.3rem; }
 .account-drawer-email { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-soft); }
 .account-drawer-nav { display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
