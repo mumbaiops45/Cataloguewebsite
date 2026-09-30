@@ -785,6 +785,8 @@ h1 em, h2 em, h3 em, .italic-accent {
 
 /* Backend banners: full-screen height, image stretched to all four edges. */
 .homePage .hero { min-height: calc(100svh - var(--nav-h, var(--nav-fallback))); }
+/* Desktop: hero is 20vh taller than the screen space below the navbar. */
+@media (min-width: 1024px) { .homePage .hero { min-height: calc(120svh - var(--nav-h, var(--nav-fallback))); } }
 .homePage .mid-banner { min-height: 100svh; }
 /* Banner title, description and CTA sit at the vertical middle. */
 .homePage .hero { align-items: center; }
