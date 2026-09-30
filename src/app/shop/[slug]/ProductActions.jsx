@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, ShoppingBag, Zap } from "lucide-react";
+import { Check, Minus, Plus, ShoppingBag, Zap } from "lucide-react";
 import { useCartStore } from "../../store/cartStore";
 import { useAuth } from "../../components/auth/AuthContext";
 import { useLoginModal } from "../../components/auth/LoginModalContext";
@@ -16,20 +16,23 @@ export default function ProductActions({ product }) {
   const stock = Math.max(0, Number(product.stock) || 0);
   const outOfStock = stock === 0;
   const [qty, setQty] = useState(1);
-  const [added, setAdded] = useState(false);
   const [pending, setPending] = useState(false);
+  // stays "Added to cart" while the product is in the cart, even on a revisit
+  const inCart = useCartStore((s) => !!user && s.items.some((it) => it.productId === product.id));
 
   const handleAdd = async () => {
     if (!user) {
       openLogin();
       return;
     }
+    if (inCart) {
+      openDrawer();
+      return;
+    }
     setPending(true);
     try {
       await addToCart(product, qty);
-      setAdded(true);
       openDrawer();
-      setTimeout(() => setAdded(false), 1800);
     } catch {
       // error surfaced via the cart store; nothing more to do here
     } finally {
@@ -44,7 +47,7 @@ export default function ProductActions({ product }) {
     }
     setPending(true);
     try {
-      await addToCart(product, qty);
+      if (!inCart) await addToCart(product, qty);
       router.push("/checkout");
     } catch {
       // error surfaced via the cart store; nothing more to do here
@@ -83,7 +86,7 @@ export default function ProductActions({ product }) {
 
       <div className="pdp-actions">
         <button type="button" className="btn btn-tertiary" onClick={handleAdd} disabled={pending || outOfStock}>
-          <ShoppingBag size={16} /> {added ? "Added ✓" : "Add to cart"}
+          {inCart ? <Check size={16} /> : <ShoppingBag size={16} />} {inCart ? "Added to cart" : "Add to cart"}
         </button>
         <button type="button" className="btn btn-orange" onClick={handleBuyNow} disabled={pending || outOfStock}>
           <Zap size={16} /> Buy now

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import BannerImage from "./BannerImage";
 import { useEffect, useState } from "react";
 import Reveal from "../anim/Reveal";
 import BannerTitle, { BannerCount, BannerCta } from "./BannerTitle";
@@ -27,13 +27,7 @@ export default function MidBanner({ banners: initial = [] }) {
     <section className="mid-banner">
       {banners.map((b, i) => (
         <div key={b._id} className={`mid-banner-slide ${i === current ? "active" : ""}`}>
-          <Image
-            className="banner-img"
-            src={b.url}
-            alt={[b.title1, b.title2].filter(Boolean).join(" ") || "SEFD banner"}
-            fill
-            sizes="100vw"
-          />
+          <BannerImage banner={b} />
         </div>
       ))}
       <div className="mid-banner-scrim" />

@@ -784,7 +784,11 @@ h1 em, h2 em, h3 em, .italic-accent {
 .hero-dot.active { width: 52px; background: var(--orange); }
 
 /* Backend banners: full-screen height, image stretched to all four edges. */
-.homePage .hero, .homePage .mid-banner { min-height: 100svh; }
+.homePage .hero { min-height: calc(100svh - var(--nav-h, var(--nav-fallback))); }
+.homePage .mid-banner { min-height: 100svh; }
+/* Banner title, description and CTA sit at the vertical middle. */
+.homePage .hero { align-items: center; }
+.homePage .hero-inner { padding-block: clamp(32px, 6vw, 72px); }
 .hero-slide .banner-img, .mid-banner-slide .banner-img { object-fit: fill; }
 
 /* API banner copy â€” fades in on each slide change */
@@ -902,9 +906,9 @@ h1 em, h2 em, h3 em, .italic-accent {
 .mid-banner-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, rgba(34, 26, 94, 0.92) 0%, rgba(34, 26, 94, 0.55) 45%, rgba(34, 26, 94, 0.2) 80%);
+  background: linear-gradient(100deg, rgba(34, 26, 94, 0.5) 0%, rgba(34, 26, 94, 0.22) 45%, rgba(34, 26, 94, 0) 80%);
 }
-.mid-banner-inner { position: relative; z-index: 1; max-width: 46ch; }
+.mid-banner-inner { position: relative; z-index: 1; max-width: 46ch; text-shadow: 0 2px 22px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.35); }
 .mid-banner p.eyebrow { color: var(--orange-soft); }
 .mid-banner h2 { margin-top: 14px; font-size: clamp(1.8rem, 3.4vw, 2.8rem); color: #fff; }
 .mid-banner h2 em { color: var(--tertiary-soft); font-style: normal; }
@@ -912,7 +916,7 @@ h1 em, h2 em, h3 em, .italic-accent {
 .mid-banner .btn { margin-top: 28px; }
 
 @media (max-width: 640px) {
-  .mid-banner-scrim { background: linear-gradient(180deg, rgba(34, 26, 94, 0.45) 0%, rgba(34, 26, 94, 0.92) 70%); }
+  .mid-banner-scrim { background: linear-gradient(180deg, rgba(34, 26, 94, 0.1) 0%, rgba(34, 26, 94, 0.5) 75%); }
 }
 
 /* =========================================================
@@ -2758,9 +2762,11 @@ h1 em, h2 em, h3 em, .italic-accent {
   .toast { max-width: none; }
 }
 
-.homePage {
-  padding-top: 160px;
-}
+/* Banner starts right below the fixed navbar. --nav-h is measured by the
+   Navbar; the fallbacks match its height before that runs. */
+.homePage { --nav-fallback: 102px; padding-top: var(--nav-h, var(--nav-fallback)); }
+@media (min-width: 641px) { .homePage { --nav-fallback: 116px; } }
+@media (min-width: 1200px) { .homePage { --nav-fallback: 170px; } }
 /* =========================================================
    CUSTOMER PANEL (account)
 ========================================================= */

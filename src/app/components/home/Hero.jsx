@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import BannerImage from "./BannerImage";
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, prefersReducedMotion } from "../anim/gsap";
@@ -78,14 +78,7 @@ export default function Hero({ banners: initial = [] }) {
       <div className="hero-slides">
         {banners.map((b, i) => (
           <div className="hero-slide" key={b._id} style={{ opacity: i === 0 ? 1 : 0 }}>
-            <Image
-              className="banner-img"
-              src={b.url}
-              alt={[b.title1, b.title2].filter(Boolean).join(" ") || "SEFD banner"}
-              fill
-              priority={i === 0}
-              sizes="100vw"
-            />
+            <BannerImage banner={b} priority={i === 0} />
           </div>
         ))}
       </div>

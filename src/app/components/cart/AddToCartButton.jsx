@@ -13,8 +13,9 @@ export default function AddToCartButton({ product, className = "" }) {
   const addToCart = useCartStore((s) => s.addToCart);
   const { user } = useAuth();
   const { open: openLogin } = useLoginModal();
+  const openDrawer = useCartStore((s) => s.openDrawer);
   const [pending, setPending] = useState(false);
-  const [added, setAdded] = useState(false);
+  const added = useCartStore((s) => !!user && s.items.some((it) => it.productId === product.id));
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -24,11 +25,13 @@ export default function AddToCartButton({ product, className = "" }) {
       openLogin();
       return;
     }
+    if (added) {
+      openDrawer();
+      return;
+    }
     setPending(true);
     try {
       await addToCart(product, 1);
-      setAdded(true);
-      setTimeout(() => setAdded(false), 1400);
     } catch {
       // error already surfaced via the cart store's toast
     } finally {
@@ -42,8 +45,8 @@ export default function AddToCartButton({ product, className = "" }) {
       className={`quick-add-btn ${className}`.trim()}
       onClick={handleClick}
       disabled={pending}
-      aria-label={`Add ${product.name} to cart`}
-      title="Add to cart"
+      aria-label={added ? `${product.name} added to cart` : `Add ${product.name} to cart`}
+      title={added ? "Added to cart" : "Add to cart"}
     >
       {pending ? (
         <Loader2 size={16} className="spin" />

@@ -49,6 +49,22 @@ export default function Navbar({ categories = [] }) {
     return () => document.removeEventListener("mousedown", onDown);
   }, [suggestOpen]);
 
+  // Publish the full (unscrolled) header height as --nav-h so the home banner
+  // starts right below the navbar on every screen size. Only measured at the
+  // top of the page — scrolling collapses the announce bar.
+  useEffect(() => {
+    const header = document.querySelector(".nav");
+    if (!header) return;
+    const measure = () => {
+      if (window.scrollY > 4) return;
+      document.documentElement.style.setProperty("--nav-h", `${Math.round(header.offsetHeight)}px`);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(header);
+    return () => ro.disconnect();
+  }, []);
+
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
