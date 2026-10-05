@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
+import Image from "../components/ui/SmartImage";
 import Link from "next/link";
 import { ArrowUpRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import SplitHeading from "../components/anim/SplitHeading";

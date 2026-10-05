@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "../ui/SmartImage";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Loader2, Package } from "lucide-react";

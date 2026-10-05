@@ -1,4 +1,5 @@
 import { getImageProps } from "next/image";
+import { cloudinaryLoader, isCloudinary } from "../ui/SmartImage";
 
 // Desktop image (`url`) on wider screens, mobile image (`mobileUrl`) on
 // phones. One <img> per banner, so the browser downloads only the one it shows.
@@ -9,9 +10,9 @@ export default function BannerImage({ banner, priority = false }) {
     sizes: "100vw",
     priority,
   };
-  const { props: desktop } = getImageProps({ ...common, src: banner.url });
+  const { props: desktop } = getImageProps({ ...common, src: banner.url, ...(isCloudinary(banner.url) && { loader: cloudinaryLoader }) });
   const mobile = banner.mobileUrl
-    ? getImageProps({ ...common, src: banner.mobileUrl }).props
+    ? getImageProps({ ...common, src: banner.mobileUrl, ...(isCloudinary(banner.mobileUrl) && { loader: cloudinaryLoader }) }).props
     : null;
 
   return (

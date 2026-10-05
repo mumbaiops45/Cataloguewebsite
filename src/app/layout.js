@@ -13,6 +13,7 @@ import LoginModal from "./components/auth/LoginModal";
 import { AccountDrawerProvider } from "./components/auth/AccountDrawerContext";
 import AccountDrawer from "./components/auth/AccountDrawer";
 import { getCategoryList } from "./utils/catalog";
+import { preconnect } from "react-dom";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -55,6 +56,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
+  // product and banner images come from Cloudinary — open that connection early
+  preconnect("https://res.cloudinary.com");
   const categories = await getCategoryList().catch(() => []);
 
   return (

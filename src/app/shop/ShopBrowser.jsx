@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "../components/ui/SmartImage";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";

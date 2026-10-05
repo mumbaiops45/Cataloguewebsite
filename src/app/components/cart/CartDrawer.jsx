@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
+import Image from "../ui/SmartImage";
 import Link from "next/link";
 import { ArrowUpRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCartStore, selectCartCount } from "../../store/cartStore";

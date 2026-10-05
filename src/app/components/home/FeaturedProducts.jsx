@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "../ui/SmartImage";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../anim/Reveal";

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "../../components/ui/SmartImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, ArrowLeft, ShieldCheck, Truck, Sparkles } from "lucide-react";
@@ -44,7 +44,7 @@ export default async function ProductPage({ params }) {
       </div>
 
       <div className="pdp-grid">
-        <Reveal className="pdp-media">
+        <div className="pdp-media">
           <span className="pdp-media-badge">Handmade</span>
           <Image
             src={product.image || "/file.svg"}
@@ -53,7 +53,7 @@ export default async function ProductPage({ params }) {
             priority
             sizes="(max-width: 1080px) 100vw, 55vw"
           />
-        </Reveal>
+        </div>
 
         <div className="pdp-info">
           <p className="cat">{product.category}</p>
