@@ -1,11 +1,12 @@
 import Image from "../../components/ui/SmartImage";
+import { PDP_IMAGE_SIZES } from "../../lib/images";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, ArrowLeft, ShieldCheck, Truck, Sparkles } from "lucide-react";
 import Reveal from "../../components/anim/Reveal";
 import ScrollToTop from "../../components/anim/ScrollToTop";
 import AddToCartButton from "../../components/cart/AddToCartButton";
-import { getCatalog, getProductFromList, getRelatedFromList } from "../../utils/catalog";
+import { getCatalog, getProductFromList, getRelatedFromList } from "../../utils/catalog.server";
 import ProductActions from "./ProductActions";
 
 export const dynamic = "force-dynamic";
@@ -51,7 +52,7 @@ export default async function ProductPage({ params }) {
             alt={product.name}
             fill
             priority
-            sizes="(max-width: 1080px) 100vw, 55vw"
+            sizes={PDP_IMAGE_SIZES}
           />
         </div>
 

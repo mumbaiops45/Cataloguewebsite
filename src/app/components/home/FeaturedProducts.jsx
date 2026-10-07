@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "../anim/Reveal";
 import AddToCartButton from "../cart/AddToCartButton";
-import { getFeaturedProducts } from "../../utils/catalog";
+import { getFeaturedProducts } from "../../utils/catalog.server";
 
 export default async function FeaturedProducts() {
   const featured = await getFeaturedProducts(10).catch(() => []);

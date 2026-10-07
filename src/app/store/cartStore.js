@@ -1,7 +1,6 @@
 "use client";
 
 import { create } from "zustand";
-import { getCatalog } from "../utils/catalog";
 import {
   createCart,
   getCart,
@@ -39,7 +38,9 @@ export const useCartStore = create((set, get) => ({
     if (get().catalogMap.size > 0 || get().catalogLoading) return;
     set({ catalogLoading: true });
     try {
-      const { products } = await getCatalog();
+      const res = await fetch("/api/catalog");
+      if (!res.ok) throw new Error("catalog request failed");
+      const { products } = await res.json();
       set({ catalogMap: new Map(products.map((p) => [p.id, p])), catalogLoading: false });
     } catch {
       set({ catalogLoading: false });

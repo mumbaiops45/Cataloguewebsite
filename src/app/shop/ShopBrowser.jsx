@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "../components/ui/SmartImage";
+import Image, { PDP_IMAGE_SIZES, preloadImage } from "../components/ui/SmartImage";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -122,7 +122,13 @@ export default function ShopBrowser({ initialCategories = [], initialProducts = 
         )}
         <Reveal className="product-grid" stagger scroll={false} y={20} key={q + cat + sort + currentPage}>
           {pageList.map((p, i) => (
-            <article className="product-card" key={p.slug}>
+            <article
+              className="product-card"
+              key={p.slug}
+              // warm the product page photo on hover / first touch
+              onPointerEnter={() => preloadImage(p.image, PDP_IMAGE_SIZES)}
+              onTouchStart={() => preloadImage(p.image, PDP_IMAGE_SIZES)}
+            >
               <div className="frame-wrap">
                 <Link href={`/shop/${p.slug}`} className="frame">
                   <Image

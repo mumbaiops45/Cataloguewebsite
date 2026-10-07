@@ -12,7 +12,7 @@ import { LoginModalProvider } from "./components/auth/LoginModalContext";
 import LoginModal from "./components/auth/LoginModal";
 import { AccountDrawerProvider } from "./components/auth/AccountDrawerContext";
 import AccountDrawer from "./components/auth/AccountDrawer";
-import { getCategoryList } from "./utils/catalog";
+import { getCategoryList } from "./utils/catalog.server";
 import { preconnect } from "react-dom";
 
 const rubik = Rubik({

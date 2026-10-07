@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import SplitHeading from "../components/anim/SplitHeading";
 import ShopBrowser from "./ShopBrowser";
-import { getCatalog } from "../utils/catalog";
+import { getCatalog } from "../utils/catalog.server";
 import { getProducts } from "../router/product.router";
 
 export const metadata = {

@@ -5,7 +5,7 @@ import Reveal from "../components/anim/Reveal";
 import SplitHeading from "../components/anim/SplitHeading";
 import IshwariProductGrid from "../components/ishwari/IshwariProductGrid";
 import { sefdAbout, ishwariAbout } from "../lib/site";
-import { getCatalog } from "../utils/catalog";
+import { getCatalog } from "../utils/catalog.server";
 
 export const metadata = {
   title: "Ishwari — Divine Offerings",

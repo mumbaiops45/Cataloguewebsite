@@ -270,7 +270,22 @@ h1 em, h2 em, h3 em, .italic-accent {
   backdrop-filter: blur(14px);
   box-shadow: 0 1px 0 var(--line-soft);
   transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease), min-height 0.4s var(--ease), color 0.4s var(--ease);
+  position: relative;
 }
+/* The bar's content stays in the centred .wrap, but its white background
+   runs edge to edge so the page doesn't show at the sides on wide screens. */
+.nav-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  z-index: -1;
+  background: inherit;
+  box-shadow: inherit;
+}
+.nav { overflow-x: clip; }
 .nav.scrolled .nav-bar {
   box-shadow: 0 1px 0 var(--line-soft), 0 16px 36px -30px rgba(54, 42, 146, 0.5);
 }

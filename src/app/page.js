@@ -5,8 +5,8 @@ import Collections from "./components/home/Collections";
 import MidBanner from "./components/home/MidBanner";
 import Impact from "./components/home/Impact";
 import InfoStrip from "./components/home/InfoStrip";
-import { getCategoryList } from "./utils/catalog";
-import { getBanners, splitBanners } from "./router/banner.router";
+import { getBanners, getCategoryList } from "./utils/catalog.server";
+import { splitBanners } from "./router/banner.router";
 
 // Render per request so Featured products / categories reflect the live DB
 // instead of being frozen at build time.

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useLayoutEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ScrollTrigger, prefersReducedMotion } from "./gsap";
 
@@ -17,7 +17,10 @@ function ScrollReset() {
   const pathname = usePathname();
   const search = useSearchParams().toString();
 
-  useEffect(() => {
+  // Runs before the new page is painted, so it never shows at the old scroll
+  // position — and the old page doesn't jump to the top while the new one
+  // is still loading.
+  useLayoutEffect(() => {
     if (window.location.hash) return; // let #anchor links scroll to their target
     // Hold the page at the top while it finishes streaming in and images,
     // fonts and Next's own scroll handling settle — a single reset can run
@@ -55,28 +58,7 @@ export default function SmoothScroll({ children }) {
     // Back/Forward: browsers may restore the old position after navigation.
     const onPop = () => requestAnimationFrame(toTop);
     window.addEventListener("popstate", onPop);
-
-    // Any internal link click (header, footer, cards…) jumps to the top right
-    // away, so the next page never appears at the old scroll position while
-    // it loads.
-    const onClick = (e) => {
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      const a = e.target.closest?.("a[href]");
-      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
-      // buttons inside a card link (quick add to cart) don't navigate
-      const btn = e.target.closest("button");
-      if (btn && a.contains(btn)) return;
-      const url = new URL(a.href, window.location.href);
-      if (url.origin !== window.location.origin || url.hash) return;
-      toTop();
-    };
-    // capture phase: Next's <Link> calls preventDefault() during bubbling
-    document.addEventListener("click", onClick, true);
-
-    return () => {
-      window.removeEventListener("popstate", onPop);
-      document.removeEventListener("click", onClick, true);
-    };
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
 
   useEffect(() => {
