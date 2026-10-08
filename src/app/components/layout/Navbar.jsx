@@ -33,17 +33,26 @@ export default function Navbar({ categories = [] }) {
   const catRef = useRef(null);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const searchRef = useRef(null);
+  const mobileSearchRef = useRef(null);
 
   const closeSuggest = () => {
     setSuggestOpen(false);
     setQuery("");
   };
 
+  // ✕ in the search box: empty the text and the suggestions, keep the cursor there
+  const clearSearch = (e) => {
+    setQuery("");
+    setSuggestOpen(false);
+    e.currentTarget.closest("form")?.querySelector("input")?.focus();
+  };
+
   // Close the product suggestions on outside click.
   useEffect(() => {
     if (!suggestOpen) return;
     const onDown = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target)) setSuggestOpen(false);
+      const inside = [searchRef, mobileSearchRef].some((r) => r.current?.contains(e.target));
+      if (!inside) setSuggestOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
@@ -123,6 +132,35 @@ export default function Navbar({ categories = [] }) {
     };
   }, [catOpen]);
 
+  // Product search box — the desktop navbar and the phone search row share it.
+  const renderSearch = (className, ref) => (
+    <form className={className} onSubmit={submitSearch} role="search" ref={ref}>
+      <button type="submit" className="search-submit" aria-label="Search">
+        <Search size={16} />
+      </button>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setSuggestOpen(true);
+        }}
+        onFocus={() => setSuggestOpen(true)}
+        onKeyDown={(e) => e.key === "Escape" && setSuggestOpen(false)}
+        placeholder="Search products…"
+        maxLength={60}
+        aria-label="Search products"
+        autoComplete="off"
+      />
+      {query && (
+        <button type="button" className="search-clear" onClick={clearSearch} aria-label="Clear search">
+          <X size={14} />
+        </button>
+      )}
+      <SearchSuggest query={query} visible={suggestOpen} onPick={closeSuggest} />
+    </form>
+  );
+
   return (
     <>
       <header className={`nav ${scrolled ? "scrolled" : ""}`}>
@@ -142,26 +180,7 @@ export default function Navbar({ categories = [] }) {
             </span>
           </Link>
 
-          <form className="nav-search desktop-only" onSubmit={submitSearch} role="search" ref={searchRef}>
-            <button type="submit" className="search-submit" aria-label="Search">
-              <Search size={16} />
-            </button>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setSuggestOpen(true);
-              }}
-              onFocus={() => setSuggestOpen(true)}
-              onKeyDown={(e) => e.key === "Escape" && setSuggestOpen(false)}
-              placeholder="Search products…"
-              maxLength={60}
-              aria-label="Search products"
-              autoComplete="off"
-            />
-            <SearchSuggest query={query} visible={suggestOpen} onPick={closeSuggest} />
-          </form>
+          {renderSearch("nav-search desktop-only", searchRef)}
 
           <div className="nav-actions">
             <button
@@ -201,6 +220,11 @@ export default function Navbar({ categories = [] }) {
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
+        </div>
+
+        {/* Phones: search always visible in its own row under the logo bar */}
+        <div className="nav-search-row mobile-only">
+          <div className="wrap">{renderSearch("nav-search", mobileSearchRef)}</div>
         </div>
 
         <div className="nav-utility desktop-only">
@@ -269,6 +293,11 @@ export default function Navbar({ categories = [] }) {
               aria-label="Search products"
               autoComplete="off"
             />
+            {query && (
+              <button type="button" className="search-clear" onClick={clearSearch} aria-label="Clear search">
+                <X size={15} />
+              </button>
+            )}
           </form>
           <SearchSuggest
             query={query}

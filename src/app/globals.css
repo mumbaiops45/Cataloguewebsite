@@ -364,6 +364,24 @@ h1 em, h2 em, h3 em, .italic-accent {
 }
 .nav-search input:focus { outline: none; }
 .nav-search input::placeholder { color: var(--ink-soft); }
+/* ✕ clear button inside the search boxes */
+.search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: -4px;
+  padding: 4px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.search-clear:hover { color: var(--orange-deep); background: rgba(0, 0, 0, 0.06); }
+.search-clear:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+.mobile-search .search-clear:hover { color: var(--orange-soft); background: rgba(255, 255, 255, 0.08); }
 
 /* Live product matches under the search bar */
 .nav-search { position: relative; }
@@ -3566,3 +3584,25 @@ img, video { max-width: 100%; }
 .field-error { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 600; color: #c62828; line-height: 1.4; }
 .field-hint { display: block; margin-top: 6px; font-size: 12px; color: var(--ink-soft); }
 .field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: #c62828; box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
+
+/* Phones: search box in its own row under the logo bar. The fixed header
+   gets --msearch-h taller, so page content moves down by the same amount. */
+.mobile-only { display: none; }
+@media (max-width: 720px) {
+  :root { --msearch-h: 58px; }
+  .mobile-only { display: block; }
+  .nav-search-row {
+    display: flex;
+    align-items: center;
+    height: var(--msearch-h);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 var(--line-soft);
+  }
+  .nav-search-row .wrap { width: 100%; }
+  .nav-search-row .nav-search { max-width: none; margin: 0; }
+  .nav-search-row .nav-search input { font-size: 16px; } /* 16px stops iOS zooming in on focus */
+  main { padding-top: var(--msearch-h); }
+  /* home measures the full header (search row included) itself */
+  .homePage { --nav-fallback: 160px; margin-top: calc(-1 * var(--msearch-h)); }
+}
