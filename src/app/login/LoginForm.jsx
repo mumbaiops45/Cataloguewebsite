@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Reveal from "../components/anim/Reveal";
 import { contact } from "../lib/site";
 import { useAuth } from "../components/auth/AuthContext";
 import { firstError, only, rules } from "../utils/validate";
 import { useLoginModal } from "../components/auth/LoginModalContext";
+import LogoutConfirm from "../components/auth/LogoutConfirm";
 
 const emptyForm = { name: "", email: "", phone: "", password: "" };
 
@@ -18,6 +19,8 @@ export default function LoginForm() {
 
   const [mode, setMode] = useState("login"); // "login" | "register"
   const [show, setShow] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const cancelLogout = useCallback(() => setConfirmLogout(false), []);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
@@ -95,9 +98,17 @@ export default function LoginForm() {
         <p className="auth-note">
           You&apos;re logged in{user.email ? ` as ${user.email}` : ""}.
         </p>
-        <button type="button" className="btn btn-orange auth-submit" onClick={logout}>
+        <button type="button" className="btn btn-orange auth-submit" onClick={() => setConfirmLogout(true)}>
           Log out
         </button>
+        <LogoutConfirm
+          open={confirmLogout}
+          onCancel={cancelLogout}
+          onConfirm={() => {
+            setConfirmLogout(false);
+            logout();
+          }}
+        />
       </Reveal>
     );
   }

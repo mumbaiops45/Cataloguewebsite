@@ -3606,3 +3606,20 @@ img, video { max-width: 100%; }
   /* home measures the full header (search row included) itself */
   .homePage { --nav-fallback: 160px; margin-top: calc(-1 * var(--msearch-h)); }
 }
+
+/* "Are you sure you want to log out?" popup (reuses the login modal shell) */
+.logout-confirm-overlay { z-index: 210; } /* above the account drawer */
+.logout-confirm { max-width: 25rem; text-align: center; }
+.logout-confirm-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--tertiary);
+  color: #fff;
+}
+.logout-confirm h2 { margin-top: 14px; font-size: 1.5rem; color: var(--navy); }
+.logout-confirm p { margin-top: 8px; color: var(--ink-soft); line-height: 1.6; }
+.logout-confirm-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
+.logout-confirm-actions .btn { flex: 1 1 140px; justify-content: center; white-space: nowrap; }

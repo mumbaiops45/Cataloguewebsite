@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, MapPin, Package, Settings, User2 } from "lucide-react";
 import AddressManager from "../components/account/AddressManager";
 import OrdersList from "../components/account/OrdersList";
 import ProfileForm from "../components/account/ProfileForm";
 import { useAuth } from "../components/auth/AuthContext";
+import LogoutConfirm from "../components/auth/LogoutConfirm";
 
 const NAV = [
   { id: "orders", label: "My orders", Icon: Package },
@@ -31,6 +32,8 @@ export default function AccountPage() {
   const router = useRouter();
   const [section, setSection] = useState("orders");
   const [settingsTab, setSettingsTab] = useState("profile");
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const cancelLogout = useCallback(() => setConfirmLogout(false), []);
 
   useEffect(() => {
     if (ready && !user) router.replace("/");
@@ -91,7 +94,7 @@ export default function AccountPage() {
 
           <div className="acct-side-foot">
             <small>{user.email}</small>
-            <button type="button" className="acct-logout" onClick={logout}>
+            <button type="button" className="acct-logout" onClick={() => setConfirmLogout(true)}>
               <LogOut size={15} /> Logout
             </button>
           </div>
@@ -134,6 +137,14 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+      <LogoutConfirm
+        open={confirmLogout}
+        onCancel={cancelLogout}
+        onConfirm={() => {
+          setConfirmLogout(false);
+          logout();
+        }}
+      />
     </section>
   );
 }
